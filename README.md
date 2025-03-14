@@ -3,8 +3,11 @@ This mod lets you add custom dialogues and sound effects to any current and futu
 
 Features:
 ✅ Customize Any Animation – Attach unique dialogue and sound effects to every action.
+
 ✅ Works with Future Updates – Automatically supports new animations as they are added.
+
 ✅ More Personality – Make your pet react in fun and unique ways!
+
 ✅ Easy Integration
 
 📢 How to edit / add dialogue or sounds:
