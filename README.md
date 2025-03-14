@@ -1,5 +1,5 @@
 # LolisBuddy
-This mod lets you add custom dialogues and sound effects to any current and future animations 🐾✨
+This mod lets you add custom dialogues and sound effects to any current and future animations.
 
 Features:
 

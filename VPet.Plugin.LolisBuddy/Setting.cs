@@ -95,6 +95,22 @@ namespace VPet.Plugin.LolisBuddy
             }
         }
 
+        winSetting winSetting;
+        public void Display()
+        {
+            if (winSetting != null)
+            {
+                winSetting.Activate();
+                return;
+            }
+            else
+            {
+                winSetting = new winSetting();
+                winSetting.Closed += (s, e) => { winSetting = null; };
+                winSetting.Show();
+            }
+        }
+
         /// <summary>
         /// Saves current settings to config.lps
         /// </summary>
