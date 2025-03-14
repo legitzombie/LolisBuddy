@@ -1,0 +1,4 @@
+shutdown:|Type#shutdown:|Name#shutdown:|Mood#Happy:|Dialogue#Ehhh~? Already? Oni-chan~!:|SoundEffect#test.wav:|
+shutdown:|Type#shutdown:|Name#shutdown:|Mood#Nomal:|Dialogue#Mmm... okay, see you later Oni-chan!:|SoundEffect#test.wav:|
+shutdown:|Type#shutdown:|Name#shutdown:|Mood#PoorCondition:|Dialogue#Mou... so sleepy... shutting down...:|SoundEffect#test.wav:|
+shutdown:|Type#shutdown:|Name#shutdown:|Mood#ill:|Dialogue#uh... system... failing... goodbye...:|SoundEffect#test.wav:|
