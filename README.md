@@ -1,15 +1,13 @@
-# LolisBuddy
-This mod lets you add custom dialogues and sound effects to any current and future animations.
+#LolisBuddy
 
-Features:
+LolisBuddy aims to turn your VPet into a self learning AI.
+Currently supports custom animation dialogues, sounds and basic memory.
 
+Features / Roadmap:
 ✅ Customize Any Animation – Attach unique dialogue and sound effects to every action.
-
-✅ Works with Future Updates – Automatically supports new animations as they are added.
-
-✅ More Personality – Make your pet react in fun and unique ways!
-
-✅ Easy Integration
+✅ Basic intelligence - Early framework for machine learning.
+❌ ChatGPT Integration - Optional toggle to let user generate dialogue through AI.
+❌ Self learning AI - Local Neural Network playing the game by itself and studying your behaviors.
 
 📢 How to edit / add dialogue or sounds:
 
