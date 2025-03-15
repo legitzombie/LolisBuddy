@@ -1,12 +1,18 @@
 #LolisBuddy
 
+
 LolisBuddy aims to turn your VPet into a self learning AI.
+
 Currently supports custom animation dialogues, sounds and basic memory.
 
 Features / Roadmap:
+
 ✅ Customize Any Animation – Attach unique dialogue and sound effects to every action.
+
 ✅ Basic intelligence - Early framework for machine learning.
+
 ❌ ChatGPT Integration - Optional toggle to let user generate dialogue through AI.
+
 ❌ Self learning AI - Local Neural Network playing the game by itself and studying your behaviors.
 
 📢 How to edit / add dialogue or sounds:
