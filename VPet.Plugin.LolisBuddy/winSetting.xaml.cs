@@ -14,13 +14,13 @@ namespace VPet.Plugin.LolisBuddy
             InitializeComponent();
             this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             UserSettings = new Setting(); // Load or create settings instance
-            UserSettings.LoadSettings(); // Load settings from file
+            UserSettings.Load(); // Load settings from file
             DataContext = UserSettings;
         }
 
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
-            UserSettings.SaveSettings(); // Save settings when clicking the button
+            UserSettings.Save(); // Save settings when clicking the button
             Close();
         }
     }

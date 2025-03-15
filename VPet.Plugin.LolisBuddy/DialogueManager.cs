@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Media;
 using System.Reflection;
+using System.Windows;
 using VPet_Simulator.Core;
 using VPet_Simulator.Windows.Interface;
 
@@ -15,17 +16,23 @@ namespace VPet.Plugin.LolisBuddy
     {
         private static readonly string TextFolderPath = Path.Combine(
             Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? "",
-            "text"
+            @"text\"
         );
 
         private static readonly string SoundFolderPath = Path.Combine(
              Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? "",
-            "sound"
+            @"sound\"
         );
 
+        private static readonly string ConfigFolderPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+
         private List<DialogueEntry> dialogues = new List<DialogueEntry>();
+        private IOManager iOManager = new IOManager();
         public DialogueEntry dialogue { get; private set; }
         private Random random = new Random();
+
+        private WindowManager windowManager = new WindowManager();
 
         public DialogueManager()
         {
@@ -35,16 +42,7 @@ namespace VPet.Plugin.LolisBuddy
         /// Loads all dialogues from .lps files in the "text" folder
         public void LoadDialogues()
         {
-            DirectoryInfo di = new DirectoryInfo(TextFolderPath);
-
-            foreach (FileInfo fi in di.EnumerateFiles("*.lps"))
-            {
-                var tmp = new LpsDocument(File.ReadAllText(fi.FullName));
-                foreach (ILine li in tmp)
-                {
-                    dialogues.Add(LPSConvert.DeserializeObject<DialogueEntry>(li));
-                }
-            }
+            dialogues = iOManager.LoadLPS<DialogueEntry>(TextFolderPath);
         }
 
         public void playEffect(bool play)
@@ -57,6 +55,8 @@ namespace VPet.Plugin.LolisBuddy
 
         public void Talk(IMainWindow main, string msg = null)
         {
+            windowManager.UpdateActiveWindowDetails();
+            iOManager.SaveLPS(windowManager.Windows, ConfigFolderPath, "memory");
             main.Main.Say(msg ?? dialogue?.Dialogue ?? string.Empty);
         }
 
@@ -71,7 +71,6 @@ namespace VPet.Plugin.LolisBuddy
         /// </summary>
         public DialogueEntry GetRandomDialogue(GraphInfo animation)
         {
-            if (animation == null) return null;
 
             var type = animation.Type.ToString();
             var name = animation.Name;

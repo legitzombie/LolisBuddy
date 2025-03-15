@@ -18,7 +18,7 @@ namespace VPet.Plugin.LolisBuddy
 
         public override void LoadPlugin()
         {
-            setting.LoadSettings();
+            setting.Load();
             SetupTalkTimer();
             AddMenuItem();
         }
@@ -45,7 +45,7 @@ namespace VPet.Plugin.LolisBuddy
         private void OnTalkTimerElapsed(object sender, ElapsedEventArgs e)
         {
             timerElapsed += setting.DelayTimer;
-            setting.LoadSettings();
+            setting.Load();
             talkTimer.Interval = setting.DelayTimer;
 
             animationManager.fetchAnimation(MW);

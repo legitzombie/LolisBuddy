@@ -1,5 +1,6 @@
 ﻿using LinePutScript;
 using LinePutScript.Converter;
+using Microsoft.Windows.Themes;
 using System;
 using System.ComponentModel;
 using System.IO;
@@ -13,16 +14,16 @@ namespace VPet.Plugin.LolisBuddy
     public class Setting
     {
 
-        private static readonly string ConfigPath = Path.Combine(
-            Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? "",
-            "config.lps"
-        );
+        private static readonly string ConfigPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
 
         private int delayTimer = 60000; // loop interval
         private int delayTalk = 5000; // minimum delay between dialogue
         private int chanceTalk = 5; // chance to talk
         private bool debug = false; // debugging
         private bool soundeffect = false; // animation sound effects
+
+        private IOManager iOManager = new IOManager();
 
 
         [Line]
@@ -68,31 +69,19 @@ namespace VPet.Plugin.LolisBuddy
         /// <summary>
         /// Loads settings from config.lps
         /// </summary>
-        public void LoadSettings()
+        public void Load()
         {
-            if (File.Exists(ConfigPath))
-            {
-                try
-                {
-                    LpsDocument lps = new LpsDocument(File.ReadAllText(ConfigPath));
-                    var loadedSettings = LPSConvert.DeserializeObject<Setting>(lps); 
-                    if (loadedSettings != null)
-                    {
-                        // Copy loaded values to this instance
-                        DelayTimer = loadedSettings.DelayTimer;
-                        DelayTalk = loadedSettings.DelayTalk;
-                        ChanceTalk = loadedSettings.ChanceTalk;
-                        Debug = loadedSettings.Debug;
-                        SoundEffect = loadedSettings.SoundEffect;
+            Setting loadedSettings = iOManager.LoadLPS<Setting>(ConfigPath, "config")[0];
+            Set(loadedSettings); 
+        }
 
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Failed to load settings: " + ex.Message);
-                    // If file is corrupted, fall back to default values
-                }
-            }
+        private void Set(Setting loadedSettings)
+        {
+            DelayTimer = loadedSettings.DelayTimer;
+            DelayTalk = loadedSettings.DelayTalk;
+            ChanceTalk = loadedSettings.ChanceTalk;
+            Debug = loadedSettings.Debug;
+            SoundEffect = loadedSettings.SoundEffect;
         }
 
         winSetting winSetting;
@@ -114,17 +103,10 @@ namespace VPet.Plugin.LolisBuddy
         /// <summary>
         /// Saves current settings to config.lps
         /// </summary>
-        public void SaveSettings()
+        public void Save()
         {
-            try
-            {
-                LpsDocument lps = LPSConvert.SerializeObject(this);
-                File.WriteAllText(ConfigPath, lps.ToString());
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Failed to save settings: " + ex.Message);
-            }
+            iOManager.SaveLPS(this, ConfigPath, "config");
+            Load();
         }
     }
 }
