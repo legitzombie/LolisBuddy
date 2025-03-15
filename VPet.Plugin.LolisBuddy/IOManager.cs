@@ -73,7 +73,6 @@ namespace VPet.Plugin.LolisBuddy
                             {
                                 string art = ReadEmbeddedResource("VPet.Plugin.LolisBuddy.ascii-art.txt");
                                 fileContent = fileContent.Substring(art.Length).Trim();
-                                MessageBox.Show(fileContent.Length.ToString());
                                 fileContent = DecryptText(fileContent, EncryptionKey);
                             }
                             var tmp = new LpsDocument(fileContent);
