@@ -1,5 +1,4 @@
-#LolisBuddy
-
+# LolisBuddy
 
 LolisBuddy aims to turn your VPet into a self learning AI.
 
