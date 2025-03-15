@@ -106,7 +106,6 @@ namespace VPet.Plugin.LolisBuddy
         public void Save()
         {
             iOManager.SaveLPS(this, ConfigPath, "config");
-            Load();
         }
     }
 }

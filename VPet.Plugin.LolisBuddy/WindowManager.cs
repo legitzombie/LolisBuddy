@@ -5,11 +5,16 @@ using System.Text;
 using System.Collections.Generic;
 using LinePutScript.Converter;
 using System.Windows;
+using System.Reflection;
+using System.IO;
 
 namespace VPet.Plugin.LolisBuddy
 {
     public class WindowManager
     {
+
+        private static readonly string MemoryPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
         [DllImport("user32.dll")]
         private static extern IntPtr GetForegroundWindow(); // Get active window handle
 
@@ -21,6 +26,14 @@ namespace VPet.Plugin.LolisBuddy
 
         public List<ActiveWindow> Windows = new List<ActiveWindow>(); // Store window history
         public ActiveWindow window { get; private set; } = new ActiveWindow(); // Ensure it's initialized
+        public ProcessesManager processesManager = new ProcessesManager();
+
+        private IOManager iOManager = new IOManager();
+
+        public WindowManager()
+        {
+            Windows = iOManager.LoadLPS<ActiveWindow>(MemoryPath,"memory");
+        }
 
         /// <summary>
         /// Gets details of the currently active process (name, window title, and uptime).
@@ -43,6 +56,8 @@ namespace VPet.Plugin.LolisBuddy
                 string processName = proc.ProcessName ?? "Unknown"; // Example: "chrome"
                 string windowTitle = GetActiveWindowTitle(hWnd);
                 TimeSpan uptime = GetProcessUptime(proc);
+
+                if (processesManager.IsBlacklisted(processName)) return;
 
                 // Check if the window already exists in the list
                 ActiveWindow existingWindow = Windows.Find(w => w.Process == processName && w.Title == windowTitle);

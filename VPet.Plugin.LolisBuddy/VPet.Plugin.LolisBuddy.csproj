@@ -16,6 +16,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="ascii-art.txt" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="ascii-art.txt" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="LinePutScript">
 			<Version>1.11.9</Version>
 		</PackageReference>

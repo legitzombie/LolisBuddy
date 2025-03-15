@@ -45,8 +45,8 @@ namespace VPet.Plugin.LolisBuddy
         private void OnTalkTimerElapsed(object sender, ElapsedEventArgs e)
         {
             timerElapsed += setting.DelayTimer;
-            setting.Load();
             talkTimer.Interval = setting.DelayTimer;
+            setting.Load();
 
             animationManager.fetchAnimation(MW);
             if (dialogueManager.canTalk(timerElapsed, setting))
