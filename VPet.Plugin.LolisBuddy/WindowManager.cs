@@ -1,12 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Collections.Generic;
-using LinePutScript.Converter;
 using System.Windows;
-using System.Reflection;
-using System.IO;
+using LinePutScript;
+using LinePutScript.Converter;
 
 namespace VPet.Plugin.LolisBuddy
 {
@@ -24,7 +26,7 @@ namespace VPet.Plugin.LolisBuddy
         [DllImport("user32.dll")]
         private static extern int GetWindowText(IntPtr hWnd, StringBuilder text, int count); // Get window title
 
-        public List<ActiveWindow> Windows = new List<ActiveWindow>(); // Store window history
+        public List<ActiveWindow> windows = new List<ActiveWindow>(); // Store window history
         public ActiveWindow window { get; private set; } = new ActiveWindow(); // Ensure it's initialized
         public ProcessesManager processesManager = new ProcessesManager();
 
@@ -32,7 +34,7 @@ namespace VPet.Plugin.LolisBuddy
 
         public WindowManager()
         {
-            Windows = iOManager.LoadLPS<ActiveWindow>(MemoryPath,"memory");
+            windows = iOManager.LoadLPS<ActiveWindow>(MemoryPath, "memory");
         }
 
         /// <summary>
@@ -43,9 +45,10 @@ namespace VPet.Plugin.LolisBuddy
             IntPtr hWnd = GetForegroundWindow(); // Get active window handle
 
             if (hWnd == IntPtr.Zero)
-                return; // No active window found
+            {
+                return;
+            }
 
-            // Get process ID from window handle
             GetWindowThreadProcessId(hWnd, out int processId);
 
             try
@@ -53,42 +56,56 @@ namespace VPet.Plugin.LolisBuddy
                 Process proc = Process.GetProcessById(processId);
 
                 // Extract details
-                string processName = proc.ProcessName ?? "Unknown"; // Example: "chrome"
+                string processName = proc.ProcessName ?? "Unknown";
                 string windowTitle = GetActiveWindowTitle(hWnd);
                 TimeSpan uptime = GetProcessUptime(proc);
+                string date = DateTime.Now.ToString();
+                string category = processesManager.Categorize(processName, windowTitle);
 
-                if (processesManager.IsBlacklisted(processName)) return;
+                if (processesManager.isBlacklisted(processName)) return;
 
-                // Check if the window already exists in the list
-                ActiveWindow existingWindow = Windows.Find(w => w.Process == processName && w.Title == windowTitle);
+
+                ActiveWindow existingWindow = windows.Find(w => w.Process == processName);
 
                 if (existingWindow != null)
                 {
-                    // Update uptime if the window already exists
+
                     existingWindow.Runtime = uptime.Minutes;
+                    existingWindow.Date = date;
+
                 }
                 else
                 {
-                    // Otherwise, add a new entry
-                    var newWindow = new ActiveWindow
+
+
+                    windows.Add(new ActiveWindow
                     {
                         Process = processName,
                         Title = windowTitle,
-                        Runtime = uptime.Minutes
-                    };
-                    Windows.Add(newWindow);
+                        Runtime = uptime.Minutes,
+                        Date = date,
+                        Category = category
+                    });
+
+                    int beforeCount = windows.Count;
+                    windows = windows.GroupBy(w => new { w.Process, w.Title })
+                                     .Select(g => g.First())
+                                     .ToList();
+                    int afterCount = windows.Count;
+
                 }
 
-                // Update the currently active window reference
-                window.Process = processName;
-                window.Title = windowTitle;
-                window.Runtime = uptime.Minutes;
+
+                iOManager.SaveLPS(windows, MemoryPath, "memory");
+
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error retrieving process details: {ex.Message}");
+                MessageBox.Show($"[ERROR] Failed to retrieve process details: {ex.Message}");
             }
         }
+
+
 
         /// <summary>
         /// Gets the window title of the given window handle.
@@ -121,5 +138,7 @@ namespace VPet.Plugin.LolisBuddy
         [Line] public string Title { get; set; }
         [Line] public string Process { get; set; }
         [Line] public int Runtime { get; set; }
+        [Line] public string Date { get; set; }
+        [Line] public string Category { get; set; }
     }
 }

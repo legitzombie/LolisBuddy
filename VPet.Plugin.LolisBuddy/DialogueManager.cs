@@ -24,9 +24,6 @@ namespace VPet.Plugin.LolisBuddy
             @"sound\"
         );
 
-        private static readonly string ConfigFolderPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-
-
         private List<DialogueEntry> dialogues = new List<DialogueEntry>();
         private IOManager iOManager = new IOManager();
         public DialogueEntry dialogue { get; private set; }
@@ -56,7 +53,6 @@ namespace VPet.Plugin.LolisBuddy
         public void Talk(IMainWindow main, string msg = null)
         {
             windowManager.UpdateActiveWindowDetails();
-            iOManager.SaveLPS(windowManager.Windows, ConfigFolderPath, "memory");
             main.Main.Say(msg ?? dialogue?.Dialogue ?? string.Empty);
         }
 

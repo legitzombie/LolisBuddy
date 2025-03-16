@@ -1,153 +1,156 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using LinePutScript.Converter;
-using LinePutScript;
-using System.Runtime.CompilerServices;
-using Panuon.WPF.UI;
-using System.Windows;
-using System.Security.Cryptography;
 using System.Reflection;
+using System.Text;
+using System.Windows;
+using LinePutScript;
+using LinePutScript.Converter;
+using Path = System.IO.Path;
 
 namespace VPet.Plugin.LolisBuddy
 {
     public class IOManager
     {
-        private const string EncryptionKey = "Lolisecret"; // Change this for security
-        private static string EncryptText(string text, string key)
+        private static readonly string LogPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+        private SecurityManager securityManager = new SecurityManager();
+        public IOManager() { }
+
+        public List<T> LoadLPS<T>(string path, string name = null) where T : new()
         {
-            using (Aes aes = Aes.Create())
-            {
-                aes.Key = Encoding.UTF8.GetBytes(key.PadRight(32).Substring(0, 32));
-                aes.IV = new byte[16];
-
-                using (var encryptor = aes.CreateEncryptor(aes.Key, aes.IV))
-                {
-                    byte[] inputBytes = Encoding.UTF8.GetBytes(text);
-                    byte[] encryptedBytes = encryptor.TransformFinalBlock(inputBytes, 0, inputBytes.Length);
-                    return Convert.ToBase64String(encryptedBytes);
-                }
-            }
-        }
-
-        // AES Decryption Method
-        private static string DecryptText(string encryptedText, string key)
-        {
-            using (Aes aes = Aes.Create())
-            {
-                aes.Key = Encoding.UTF8.GetBytes(key.PadRight(32).Substring(0, 32));
-                aes.IV = new byte[16];
-
-                using (var decryptor = aes.CreateDecryptor(aes.Key, aes.IV))
-                {
-                    byte[] encryptedBytes = Convert.FromBase64String(encryptedText);
-                    byte[] decryptedBytes = decryptor.TransformFinalBlock(encryptedBytes, 0, encryptedBytes.Length);
-                    return Encoding.UTF8.GetString(decryptedBytes);
-                }
-            }
-        }
-        public List <T> LoadLPS<T>(string path, string name = null) where T : new()
-        {
-
             if (!Directory.Exists(path))
             {
-                throw new DirectoryNotFoundException($"Directory not found: {path}");
+                Directory.CreateDirectory(path);
             }
 
-            List <T> lines = new List<T>();
-
+            List<T> lines = new List<T>();
             DirectoryInfo di = new DirectoryInfo(path);
 
-                foreach (FileInfo fi in di.EnumerateFiles("*.lps"))
+            foreach (FileInfo fi in di.EnumerateFiles("*.lps"))
+            {
+                try
                 {
+                    if (name == null || fi.Name == name + ".lps")
+                    {
+                        string fileContent = File.ReadAllText(fi.FullName, Encoding.UTF8);
 
-                    try
-                    {     
-                        if (name == null || fi.Name == name + ".lps")
+                        if (fi.Name == "memory.lps")
                         {
-                            string fileContent = File.ReadAllText(fi.FullName);
-                            if (fi.Name == "memory.lps")
-                            {
-                                string art = ReadEmbeddedResource("VPet.Plugin.LolisBuddy.ascii-art.txt");
-                                fileContent = fileContent.Substring(art.Length).Trim();
-                                fileContent = DecryptText(fileContent, EncryptionKey);
-                            }
-                            var tmp = new LpsDocument(fileContent);
+                            // Remove ASCII Art header if it exists
+                            string art = ReadEmbeddedResource("VPet.Plugin.LolisBuddy.ASCII.baka.txt");
+                            fileContent = fileContent.Substring(art.Length).Trim();
 
-                            foreach (ILine li in tmp)
+                            // Split encrypted entries properly
+                            string[] encryptedEntries = fileContent.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+
+                            StringBuilder decryptedContent = new StringBuilder();
+
+                            foreach (string entry in encryptedEntries)
                             {
-                                if (li != null) lines.Add(LPSConvert.DeserializeObject<T>(li));
+                                try
+                                {
+                                    string decrypted = securityManager.DecryptText(entry, securityManager.fetchKey());
+                                    decryptedContent.AppendLine(decrypted);
+                                }
+                                catch (Exception decryptEx)
+                                {
+                                    MessageBox.Show($"Decryption Failed: {decryptEx.Message}\nData: {entry}");
+                                }
                             }
+
+                            fileContent = decryptedContent.ToString().Trim();
                         }
 
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show($"[LoadLPS] ERROR processing file {fi.Name}: {ex}");
+                        var tmp = new LpsDocument(fileContent);
+
+                        foreach (ILine li in tmp)
+                        {
+                            if (li != null)
+                                lines.Add(LPSConvert.DeserializeObject<T>(li));
+                        }
                     }
                 }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"[LoadLPS] ERROR processing file {fi.Name}: {ex}");
+                }
+            }
             return lines;
         }
 
 
 
 
+
         public void SaveLPS(object obj, string path, string name)
         {
-            DirectoryInfo di = new DirectoryInfo(path);
-
-            if (obj == null)
+            try
             {
-                throw new ArgumentNullException(nameof(obj), "Cannot save a null object.");
-            }
-
-            foreach (FileInfo fi in di.EnumerateFiles("*.lps"))
-            {
-                if (fi.Name == name + ".lps")
+                if (!Directory.Exists(path))
                 {
-                    try
-                    {
-                        LpsDocument lps;
-                        string filePath = fi.FullName;
+                    Directory.CreateDirectory(path);
+                }
 
-                        // If obj is a list, handle each entry separately
-                        if (obj is IEnumerable<object> list)
-                        {
-                            bool firstIteration = true;
-                            foreach (var item in list)
-                            {
-                               
-                                if (firstIteration && fi.Name == "memory.lps")
-                                {
-                                    var art = ReadEmbeddedResource("VPet.Plugin.LolisBuddy.ascii-art.txt"); 
-                                    File.WriteAllText(filePath, art);
-                                    firstIteration = false;
-                                }
+                string filePath = Path.Combine(path, name + ".lps");
+                bool isMemoryFile = name == "memory";
+                List<string> lines = new List<string>();
 
-                                lps = LPSConvert.SerializeObject(item);
-                                string line = $"{name}:|{lps.ToString().Replace("\r", "").Replace("\n", "").Trim()}";
-                                if (fi.Name == "memory.lps") line = EncryptText(line, EncryptionKey);
-                                File.AppendAllText(filePath, Environment.NewLine + line);
-                            }
-                        }
-                        else
-                        {
-                            // Handle single object normally
-                            lps = LPSConvert.SerializeObject(obj);
-                            string line = $"{name}:|{lps.ToString().Replace("\r", "").Replace("\n", "").Trim()}";
-                            File.WriteAllText(filePath, line);
-                        }
-                    }
-                    catch (Exception ex)
+                if (obj == null)
+                {
+                    throw new ArgumentNullException(nameof(obj), "Cannot save a null object.");
+                }
+
+                if (isMemoryFile)
+                {
+                    string art = ReadEmbeddedResource("VPet.Plugin.LolisBuddy.ASCII.baka.txt");
+                    File.WriteAllText(filePath, art + Environment.NewLine, Encoding.UTF8);
+        
+                }
+
+                if (obj is IEnumerable<object> list)
+                {
+                    foreach (var item in list)
                     {
-                        MessageBox.Show($"Error saving object to {path}: {ex.Message}");
+                        LpsDocument lps = LPSConvert.SerializeObject(item);
+                        string line = $"{name}:|{lps.ToString().Replace("\r", "").Replace("\n", "").Trim()}";
+
+                        if (isMemoryFile)
+                        {
+                            string key = securityManager.fetchKey();
+                            line = securityManager.EncryptText(line, key);
+                        }
+
+                        lines.Add(line);
                     }
                 }
+                else
+                {
+                    LpsDocument lps = LPSConvert.SerializeObject(obj);
+                    string line = $"{name}:|{lps.ToString().Replace("\r", "").Replace("\n", "").Trim()}";
+
+                    if (isMemoryFile)
+                    {
+                        string key = securityManager.fetchKey();
+                        line = securityManager.EncryptText(line, key);
+                    }
+
+                    lines.Add(line);
+                }
+
+              
+                if (isMemoryFile) File.AppendAllLines(filePath, lines, Encoding.UTF8);
+                else File.WriteAllLines(filePath, lines, Encoding.UTF8);
+          
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error saving object to {path}: {ex.Message}");
             }
         }
+
+
+
 
         static string ReadEmbeddedResource(string resourceName)
         {

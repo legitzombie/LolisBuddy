@@ -20,7 +20,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <EmbeddedResource Include="ascii-art.txt" />
+	  <EmbeddedResource Include="ASCII\baka.txt" />
 	</ItemGroup>
 
 	<ItemGroup>

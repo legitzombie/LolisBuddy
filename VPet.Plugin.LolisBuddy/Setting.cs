@@ -1,13 +1,8 @@
-﻿using LinePutScript;
-using LinePutScript.Converter;
-using Microsoft.Windows.Themes;
-using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.IO;
 using System.Reflection;
-using System.Threading;
-using System.Timers;
-using System.Windows;
+using LinePutScript;
+using LinePutScript.Converter;
 
 namespace VPet.Plugin.LolisBuddy
 {
@@ -72,7 +67,7 @@ namespace VPet.Plugin.LolisBuddy
         public void Load()
         {
             Setting loadedSettings = iOManager.LoadLPS<Setting>(ConfigPath, "config")[0];
-            Set(loadedSettings); 
+            Set(loadedSettings);
         }
 
         private void Set(Setting loadedSettings)
