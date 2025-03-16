@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Media;
 using System.Reflection;
-using System.Windows;
 using VPet_Simulator.Core;
 using VPet_Simulator.Windows.Interface;
 
@@ -30,6 +29,8 @@ namespace VPet.Plugin.LolisBuddy
         private Random random = new Random();
 
         private WindowManager windowManager = new WindowManager();
+        private AnimationManager animationManager = new AnimationManager();
+        private int lastDialogue = 0; // how long since last dialogue
 
         public DialogueManager()
         {
@@ -59,6 +60,38 @@ namespace VPet.Plugin.LolisBuddy
         public bool canTalk(int timerElapsed, Setting setting)
         {
             return timerElapsed > setting.DelayTalk && random.Next(100) < setting.ChanceTalk;
+        }
+
+        public void PlayDialogue(Setting setting, IMainWindow MW)
+        {
+            if (setting.Debug)
+            {
+                Talk(MW, animationManager.debugMessage());
+            }
+            else
+            {
+                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                {
+                    GetRandomDialogue(animationManager.animation);
+                    Talk(MW);
+                    playEffect(setting.SoundEffect);
+                });
+            }
+        }
+
+        public void HandleDialogue(Setting setting, IMainWindow MW, TimerManager talkTimer)
+        {
+            lastDialogue += setting.DelayTimer;
+            setting.Load();
+            talkTimer.UpdateTimerInterval("speech", setting.DelayTimer);
+
+            animationManager.fetchAnimation(MW);
+
+            if (canTalk(lastDialogue, setting))
+            {
+                PlayDialogue(setting,MW);
+                lastDialogue = 0;
+            }
         }
 
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security;
 using System.Security.Cryptography;
 using System.Text;
 using System.Windows;
@@ -11,12 +12,11 @@ namespace VPet.Plugin.LolisBuddy
 
         private const string encryptionKey = "Lolisecret"; // Change this for security
 
-        public string fetchKey() { return encryptionKey; }
-        public string EncryptText(string text, string key)
+        public string EncryptText(string text)
         {
             using (Aes aes = Aes.Create())
             {
-                aes.Key = Encoding.UTF8.GetBytes(key.PadRight(32).Substring(0, 32));
+                aes.Key = Encoding.UTF8.GetBytes(encryptionKey.PadRight(32).Substring(0, 32));
                 aes.IV = new byte[16];
 
                 using (var encryptor = aes.CreateEncryptor(aes.Key, aes.IV))
@@ -43,6 +43,29 @@ namespace VPet.Plugin.LolisBuddy
                     return Encoding.UTF8.GetString(decryptedBytes);
                 }
             }
+        }
+
+        public string DecryptLines(string fileContent)
+        {
+            string[] encryptedEntries = fileContent.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+
+            StringBuilder decryptedContent = new StringBuilder();
+
+            foreach (string entry in encryptedEntries)
+            {
+                try
+                {
+                    string decrypted = DecryptText(entry, encryptionKey);
+                    decryptedContent.AppendLine(decrypted);
+                }
+                catch (Exception decryptEx)
+                {
+                    MessageBox.Show($"Decryption Failed: {decryptEx.Message}\nData: {entry}");
+                }
+            }
+
+            fileContent = decryptedContent.ToString().Trim();
+            return fileContent;
         }
     }
 }

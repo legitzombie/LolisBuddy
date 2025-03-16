@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace VPet.Plugin.LolisBuddy
 {
@@ -7,76 +6,92 @@ namespace VPet.Plugin.LolisBuddy
     {
         public ProcessesManager() { }
 
-        private readonly HashSet<string> WindowsProcess = new() { "explorer", "taskmgr", "shellexperiencehost", "runtimebroker", "searchui", "systemsettings", "applicationframehost", "dwm", "sihost", "ctfmon", "winlogon", "smartscreen", "securityhealthsystray", "startmenuexperiencehost", "gamebarpresencewriter", "textinputhost", "svchost", "csrss", "lsass", "services", "wininit", "fontdrvhost", "msmpeng", "nisrv", "securityhealthservice", "wermgr", "conhost", "spoolsv", "rundll32", "dllhost", "perfmon", "taskhostw", "werfault", "audiodg", "wlanext", "igfxtray", "hkcmd", "hxtsr", "browser_broker", "deviceassociationframeworkproviderhost", "searchapp" };
-        private readonly HashSet<string> Antivirus = new() { "avp", "egui", "avgui", "mbam", "mcshield", "avastui", "bitdefender", "f-secure", "nortonsecurity", "k7tssecurity" };
-        private readonly HashSet<string> Browsers = new() { "chrome", "brave", "firefox", "edge", "opera", "vivaldi" };
-        private readonly HashSet<string> GameLaunchers = new() { "steam", "epicgameslauncher", "origin", "uplay", "battlenet", "riotclient", "rockstarlauncher" };
-        private readonly HashSet<string> MessagingApps = new() { "discord", "slack", "telegram", "whatsapp", "zoom", "skype", "teams", "signal", "messenger" };
-        private readonly HashSet<string> DevelopmentTools = new() { "visualstudio", "vscode", "jetbrains", "eclipse", "androidstudio", "xcode" };
-        private readonly HashSet<string> TextEditors = new() { "notepad", "notepad++", "sublime_text", "atom" };
-        private readonly HashSet<string> ImageEditors = new() { "photoshop", "gimp", "paintdotnet", "krita", "coreldraw" };
-        private readonly HashSet<string> ModelingSoftware = new() { "blender", "maya", "3dsmax", "cinema4d", "zbrush" };
-        private readonly HashSet<string> RiggingTools = new() { "autorig", "mixamo", "houdini" };
-        private readonly HashSet<string> GameEngines = new() { "unity", "unreal", "godot", "cryengine", "gamemaker" };
-        private readonly HashSet<string> AudioTools = new() { "audacity", "reaper", "flstudio", "ableton", "protools" };
-        private readonly HashSet<string> MusicPlayers = new() { "spotify", "itunes", "vlc", "winamp", "foobar2000" };
-        private readonly HashSet<string> VideoPlayers = new() { "vlc", "mpc-hc", "mpv", "windowsmediaplayer", "quicktime" };
-        private readonly HashSet<string> TorrentingApps = new() { "utorrent", "bittorrent", "qbittorrent", "deluge", "transmission", "tixati", "vuze" };
-        private readonly HashSet<string> StreamingSoftware = new() { "obs", "streamlabs", "xsplit", "restream", "vmix" };
-        private readonly HashSet<string> CloudStorage = new() { "dropbox", "googledrive", "onedrive", "megasync", "box", "syncthing", "nextcloud" };
-        private readonly HashSet<string> VirtualMachines = new() { "vmware", "virtualbox", "parallels", "qemu", "hyper-v", "bluestacks", "ldplayer", "nox" };
-        private readonly HashSet<string> BenchmarkingTools = new() { "cpuz", "gpuz", "hwmonitor", "aida64", "prime95", "3dmark", "userbenchmark", "cinebench" };
-        private readonly HashSet<string> DownloadManagers = new() { "idm", "jdownloader", "eagleget", "free-download-manager", "folx" };
-        private readonly HashSet<string> PasswordManagers = new() { "keepass", "lastpass", "bitwarden", "1password", "dashlane", "nordpass" };
-        private readonly HashSet<string> CodeCompilers = new() { "gcc", "clang", "msbuild", "cmake", "make", "ninja" };
-        private readonly HashSet<string> SystemUtilities = new() { "ccleaner", "glaryutilities", "advanced-systemcare", "defraggler", "winoptimizer" };
-        private readonly HashSet<string> PDFReaders = new() { "adobeacrobat", "foxitreader", "sumatrapdf", "nitropdf", "xpdf" };
-        private readonly HashSet<string> CADSoftware = new() { "autocad", "solidworks", "fusion360", "freecad", "rhino", "sketchup" };
-        private readonly HashSet<string> ScreenshotTools = new() { "greenshot", "sharex", "snagit", "lightshot", "picpick" };
-        private readonly HashSet<string> NoteTakingApps = new() { "onenote", "evernote", "notion", "simplenote", "obsidian", "xmind", "freemind" };
-        private readonly HashSet<string> ImageViewers = new() { "photos", "irfanview", "xnview", "honeyview", "faststone", "acdsee", "nomacs" };
-        private readonly HashSet<string> VPNClients = new() { "nordvpn", "expressvpn", "protonvpn", "windscribe", "openvpn" };
+        private readonly HashSet<string> WindowsProcess = new()
+        { "explorer", "taskmgr", "shellexperiencehost", "runtimebroker", "searchui", "systemsettings", "applicationframehost",
+          "dwm", "sihost", "ctfmon", "winlogon", "smartscreen", "securityhealthsystray", "startmenuexperiencehost", "gamebarpresencewriter",
+          "textinputhost", "svchost", "csrss", "lsass", "services", "wininit", "fontdrvhost", "msmpeng", "nisrv", "securityhealthservice",
+          "wermgr", "conhost", "spoolsv", "rundll32", "dllhost", "perfmon", "taskhostw", "werfault", "audiodg", "wlanext", "igfxtray",
+          "hkcmd", "hxtsr", "browser_broker", "deviceassociationframeworkproviderhost", "searchapp" };
 
-        public string Categorize(string processName, string windowTitle)
+        private readonly Dictionary<string, HashSet<string>> CategoryMapping = new()
+        {
+            { "Browser", new() { "chrome", "brave", "firefox", "edge", "opera", "vivaldi" } },
+            { "Game Launcher", new() { "steam", "epicgameslauncher", "origin", "uplay", "battlenet", "riotclient", "rockstarlauncher" } },
+            { "Messaging App", new() { "discord", "slack", "telegram", "whatsapp", "zoom", "skype", "teams", "signal", "messenger" } },
+            { "Development Tool", new() { "visualstudio", "vscode", "jetbrains", "eclipse", "androidstudio", "xcode", "devenv" } },
+            { "Text Editor", new() { "notepad", "notepad++", "sublime_text", "atom" } },
+            { "Image Editor", new() { "photoshop", "gimp", "paintdotnet", "krita", "coreldraw" } },
+            { "3D Modeling Software", new() { "blender", "maya", "3dsmax", "cinema4d", "zbrush" } },
+            { "Rigging Tool", new() { "autorig", "mixamo", "houdini" } },
+            { "Game Engine", new() { "unity", "unreal", "godot", "cryengine", "gamemaker" } },
+            { "Audio Editing Tool", new() { "audacity", "reaper", "flstudio", "ableton", "protools" } },
+            { "Music Player", new() { "spotify", "itunes", "vlc", "winamp", "foobar2000" } },
+            { "Video Player", new() { "vlc", "mpc-hc", "mpv", "windowsmediaplayer", "quicktime" } },
+            { "Torrenting App", new() { "utorrent", "bittorrent", "qbittorrent", "deluge", "transmission", "tixati", "vuze" } },
+            { "Streaming Software", new() { "obs", "streamlabs", "xsplit", "restream", "vmix" } },
+            { "Cloud Storage / Backup Service", new() { "dropbox", "googledrive", "onedrive", "megasync", "box", "syncthing", "nextcloud" } },
+            { "Virtual Machine / Emulator", new() { "vmware", "virtualbox", "parallels", "qemu", "hyper-v", "bluestacks", "ldplayer", "nox" } },
+            { "Benchmarking / Hardware Monitoring Tool", new() { "cpuz", "gpuz", "hwmonitor", "aida64", "prime95", "3dmark", "userbenchmark", "cinebench" } },
+            { "Download Manager", new() { "idm", "jdownloader", "eagleget", "free-download-manager", "folx" } },
+            { "Password Manager", new() { "keepass", "lastpass", "bitwarden", "1password", "dashlane", "nordpass" } },
+            { "Code Compiler / Build Tool", new() { "gcc", "clang", "msbuild", "cmake", "make", "ninja" } },
+            { "System Utility / Optimization Tool", new() { "ccleaner", "glaryutilities", "advanced-systemcare", "defraggler", "winoptimizer" } },
+            { "PDF Reader / Document Viewer", new() { "adobeacrobat", "foxitreader", "sumatrapdf", "nitropdf", "xpdf" } },
+            { "CAD Software", new() { "autocad", "solidworks", "fusion360", "freecad", "rhino", "sketchup" } },
+            { "Screenshot / Screen Annotation Tool", new() { "greenshot", "sharex", "snagit", "lightshot", "picpick" } },
+            { "Note-Taking / Mind Mapping App", new() { "onenote", "evernote", "notion", "simplenote", "obsidian", "xmind", "freemind" } },
+            { "Image Viewer", new() { "photos", "irfanview", "xnview", "honeyview", "faststone", "acdsee", "nomacs" } },
+            { "VPN Client", new() { "nordvpn", "expressvpn", "protonvpn", "windscribe", "openvpn" } },
+            { "Antivirus", new() { "avp", "egui", "avgui", "mbam", "mcshield", "avastui", "bitdefender", "f-secure", "nortonsecurity", "k7tssecurity" } }
+        };
+
+        public List<string> Categorize(string processName, string windowTitle)
         {
             processName = processName.ToLower();
+            windowTitle = windowTitle.ToLower();
 
-            if (Browsers.Contains(processName)) return "Browser";
-            if (GameLaunchers.Contains(processName)) return "Game Launcher";
-            if (MessagingApps.Contains(processName)) return "Messaging App";
-            if (DevelopmentTools.Contains(processName)) return "Development Tool";
-            if (TextEditors.Contains(processName)) return "Text Editor";
-            if (ImageEditors.Contains(processName)) return "Image Editor";
-            if (ModelingSoftware.Contains(processName)) return "3D Modeling Software";
-            if (RiggingTools.Contains(processName)) return "Rigging Tool";
-            if (GameEngines.Contains(processName)) return "Game Engine";
-            if (AudioTools.Contains(processName)) return "Audio Editing Tool";
-            if (MusicPlayers.Contains(processName)) return "Music Player";
-            if (VideoPlayers.Contains(processName)) return "Video Player";
-            if (TorrentingApps.Contains(processName)) return "Torrenting App";
-            if (StreamingSoftware.Contains(processName)) return "Streaming Software";
-            if (CloudStorage.Contains(processName)) return "Cloud Storage / Backup Service";
-            if (VirtualMachines.Contains(processName)) return "Virtual Machine / Emulator";
-            if (BenchmarkingTools.Contains(processName)) return "Benchmarking / Hardware Monitoring Tool";
-            if (DownloadManagers.Contains(processName)) return "Download Manager";
-            if (PasswordManagers.Contains(processName)) return "Password Manager";
-            if (CodeCompilers.Contains(processName)) return "Code Compiler / Build Tool";
-            if (SystemUtilities.Contains(processName)) return "System Utility / Optimization Tool";
-            if (PDFReaders.Contains(processName)) return "PDF Reader / Document Viewer";
-            if (CADSoftware.Contains(processName)) return "CAD Software";
-            if (ScreenshotTools.Contains(processName)) return "Screenshot / Screen Annotation Tool";
-            if (NoteTakingApps.Contains(processName)) return "Note-Taking / Mind Mapping App";
-            if (ImageViewers.Contains(processName)) return "Image Viewer";
-            if (VPNClients.Contains(processName)) return "VPN Client";
-            if (Antivirus.Contains(processName)) return "Antivirus";
+            List<string> info = new List<string>();
+            string category = "Uncategorized";
+            string title = windowTitle; // Default to the original title
 
-            return "Uncategorized";
+            // Prioritize detecting a game first
+            if (GameDetector.HasGameDLLs(processName))
+            {
+                category = "Game";
+            }
+
+            // Iterate through category mappings
+            foreach (var entry in CategoryMapping)
+            {
+                foreach (var keyword in entry.Value)
+                {
+                    if (keyword == processName || windowTitle.Contains(keyword))
+                    {
+                        category = entry.Key;
+                        title = keyword; // Set the title to the matched keyword
+
+                        // Special handling for browsers
+                        if (category == "Browser")
+                        {
+                            title = WebpageDetector.Categorize(windowTitle);
+                        }
+
+                        return new List<string> { category, title }; // Return immediately after the first match
+                    }
+                }
+            }
+
+
+            return new List<string> { category, title };
         }
 
-        public bool isBlacklisted(string name)
+
+        public bool IsBlacklisted(string name)
         {
-            if (WindowsProcess.Contains(name)) return true;
-            return false;
+            return WindowsProcess.Contains(name.ToLower());
         }
+
     }
+
+
 }

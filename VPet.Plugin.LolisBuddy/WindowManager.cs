@@ -60,9 +60,16 @@ namespace VPet.Plugin.LolisBuddy
                 string windowTitle = GetActiveWindowTitle(hWnd);
                 TimeSpan uptime = GetProcessUptime(proc);
                 string date = DateTime.Now.ToString();
-                string category = processesManager.Categorize(processName, windowTitle);
+                string category = "";
+                if (!processesManager.IsBlacklisted(processName))
+                {
+                    List<string> info = processesManager.Categorize(processName, windowTitle);
+                    category = info[0];
+                    windowTitle = info[1];
+                }
+                else return;
 
-                if (processesManager.isBlacklisted(processName)) return;
+                    //MessageBox.Show($"App: {processName}.exe \n Title: {windowTitle} \n Category: {category} \n Usage: {uptime.Minutes}mins \n Last Used: {date}");
 
 
                 ActiveWindow existingWindow = windows.Find(w => w.Process == processName);
