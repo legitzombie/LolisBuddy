@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
 
 namespace VPet.Plugin.LolisBuddy
 {
@@ -18,7 +19,7 @@ namespace VPet.Plugin.LolisBuddy
             { "Education", new() { "khan academy", "coursera", "udemy", "duolingo", "wikipedia", "edx", "codecademy" } }
         };
 
-        public static string Categorize(string windowTitle)
+        public static List<string> Categorize(string windowTitle, string Category)
         {
 
             windowTitle = windowTitle.ToLower();
@@ -29,12 +30,17 @@ namespace VPet.Plugin.LolisBuddy
                 {
                     if (windowTitle.Contains(keyword))
                     {
-                        return keyword;
+                        Category = category.Key;
+                        windowTitle = keyword;
                     }
                 }
             }
 
-            return "";
+            List<string> info = new List<string>();
+            info.Add(windowTitle);
+            info.Add(Category);
+
+            return info;
         }
 
 

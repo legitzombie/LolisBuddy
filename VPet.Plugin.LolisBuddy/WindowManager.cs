@@ -101,8 +101,12 @@ namespace VPet.Plugin.LolisBuddy
                 TimeSpan uptime = GetProcessUptime(proc);
                 string date = DateTime.Now.ToString();
                 string category = processesManager.Categorize(processName, windowTitle)[0];
-                string webpage = WebpageDetector.Categorize(GetActiveWindowTitle(hWnd));
-                if (webpage != "") windowTitle = webpage;
+
+                if (category == "Browser") { 
+                    List<string> webpage = WebpageDetector.Categorize(GetActiveWindowTitle(hWnd), category);
+                    category = webpage[1];  windowTitle = webpage[0];
+                }
+
                 if (!processesManager.IsBlacklisted(processName))
                 {
                     window.Title = windowTitle;

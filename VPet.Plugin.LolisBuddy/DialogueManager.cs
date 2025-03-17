@@ -120,7 +120,7 @@ namespace VPet.Plugin.LolisBuddy
             if (Name == "AIspeech")
             {
                 windowManager.UpdateActiveWindowDetails();
-                dialogue = new LanguageManager().GenerateDialogue(windowManager.window, mood);
+                dialogue = new LanguageManager().GenerateSentence(mood, windowManager.window.Category.ToString());
             }
 
             if (dialogue.Dialogue.Length > 0) lastDialogue = 0;

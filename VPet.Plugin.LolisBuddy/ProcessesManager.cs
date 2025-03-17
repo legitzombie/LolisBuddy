@@ -70,12 +70,6 @@ namespace VPet.Plugin.LolisBuddy
                         category = entry.Key;
                         title = keyword; // Set the title to the matched keyword
 
-                        // Special handling for browsers
-                        if (category == "Browser")
-                        {
-                            title = WebpageDetector.Categorize(windowTitle);
-                        }
-
                         return new List<string> { category, title }; // Return immediately after the first match
                     }
                 }
