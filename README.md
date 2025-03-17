@@ -10,6 +10,8 @@ Currently supports custom animation dialogues, sounds and basic memory.
 
 ✅ Basic intelligence - Early framework for machine learning.
 
+✅ Self awareness - Knows how it's being treated and what you're doing, mostly. 
+
 ❌ ChatGPT Integration - Optional toggle to let user generate dialogue through AI.
 
 ❌ Self learning AI - Local Neural Network playing the game by itself and studying your behaviors.

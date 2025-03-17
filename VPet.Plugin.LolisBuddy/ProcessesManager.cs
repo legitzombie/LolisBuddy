@@ -13,7 +13,7 @@ namespace VPet.Plugin.LolisBuddy
           "wermgr", "conhost", "spoolsv", "rundll32", "dllhost", "perfmon", "taskhostw", "werfault", "audiodg", "wlanext", "igfxtray",
           "hkcmd", "hxtsr", "browser_broker", "deviceassociationframeworkproviderhost", "searchapp" };
 
-        private readonly Dictionary<string, HashSet<string>> CategoryMapping = new()
+        public readonly Dictionary<string, HashSet<string>> CategoryMapping = new()
         {
             { "Browser", new() { "chrome", "brave", "firefox", "edge", "opera", "vivaldi" } },
             { "Game Launcher", new() { "steam", "epicgameslauncher", "origin", "uplay", "battlenet", "riotclient", "rockstarlauncher" } },

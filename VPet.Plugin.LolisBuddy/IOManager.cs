@@ -15,7 +15,7 @@ namespace VPet.Plugin.LolisBuddy
 
         public IOManager() { }
 
-        public List<T> LoadLPS<T>(string path, string name = null) where T : new()
+        public List<T> LoadLPS<T>(string path, string name = null, bool encrypted = false) where T : new()
         {
             EnsureDirectoryExists(path);
             List<T> lines = new List<T>();
@@ -28,7 +28,7 @@ namespace VPet.Plugin.LolisBuddy
                 {
                     string fileContent = File.ReadAllText(fi.FullName, Encoding.UTF8);
 
-                    if (name != null && name.Contains("memory", StringComparison.OrdinalIgnoreCase))
+                    if (name != null && encrypted)
                     {
                         fileContent = ASCIIManager.RemoveASCII("VPet.Plugin.LolisBuddy.ASCII.baka.txt", fileContent);
                         fileContent = securityManager.DecryptLines(fileContent);
@@ -52,7 +52,7 @@ namespace VPet.Plugin.LolisBuddy
             if (!Directory.Exists(path)) Directory.CreateDirectory(path);
         }
 
-        public void SaveLPS(object obj, string path, string name)
+        public void SaveLPS(object obj, string path, string name, bool encrypt = false)
         {
             try
             {
@@ -61,25 +61,24 @@ namespace VPet.Plugin.LolisBuddy
 
                 if (obj == null) throw new ArgumentNullException(nameof(obj), "Cannot save a null object.");
 
-                bool isMemory = name.Contains("memory", StringComparison.OrdinalIgnoreCase);
                 List<string> lines = new List<string>();
 
-                if (isMemory) ASCIIManager.DisplayASCII("VPet.Plugin.LolisBuddy.ASCII.baka.txt", filePath);
+                if (encrypt) ASCIIManager.DisplayASCII("VPet.Plugin.LolisBuddy.ASCII.baka.txt", filePath);
 
                 if (obj is IEnumerable<object> list)
                 {
                     foreach (var item in list)
                     {
-                        string line = FormatLPS(item, name, isMemory);
+                        string line = FormatLPS(item, name, encrypt);
                         lines.Add(line);
                     }
                 }
                 else
                 {
-                    lines.Add(FormatLPS(obj, name, isMemory));
+                    lines.Add(FormatLPS(obj, name, encrypt));
                 }
 
-                if (isMemory) File.AppendAllLines(filePath, lines, Encoding.UTF8);
+                if (encrypt) File.AppendAllLines(filePath, lines, Encoding.UTF8);
                 else File.WriteAllLines(filePath, lines, Encoding.UTF8);
             }
             catch (Exception ex)

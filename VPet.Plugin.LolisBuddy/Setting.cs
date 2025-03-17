@@ -19,7 +19,7 @@ namespace VPet.Plugin.LolisBuddy
         private bool soundeffect = false; // animation sound effects
 
         private IOManager iOManager = new IOManager();
-
+        public string Name { set; get; } = "speech";
 
         [Line]
         public int DelayTimer
@@ -66,8 +66,12 @@ namespace VPet.Plugin.LolisBuddy
         /// </summary>
         public void Load()
         {
-            Setting loadedSettings = iOManager.LoadLPS<Setting>(ConfigPath, "config")[0];
-            Set(loadedSettings);
+            if ( Name == "speech")
+            {
+                Setting loadedSettings = iOManager.LoadLPS<Setting>(ConfigPath, "config")[0];
+                Set(loadedSettings);
+            }
+
         }
 
         private void Set(Setting loadedSettings)

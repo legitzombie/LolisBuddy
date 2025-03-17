@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows;
 using LinePutScript;
 using LinePutScript.Converter;
@@ -34,8 +36,46 @@ namespace VPet.Plugin.LolisBuddy
 
         public WindowManager()
         {
-            windows = iOManager.LoadLPS<ActiveWindow>(MemoryPath, "memory");
+            windows = iOManager.LoadLPS<ActiveWindow>(MemoryPath, "memory", true);
         }
+
+        private string GetBestAppName(string processName, string windowTitle, Dictionary<string, HashSet<string>> categoryMapping)
+        {
+            foreach (var category in categoryMapping)
+            {
+                foreach (var knownApp in category.Value)
+                {
+                    if (processName.IndexOf(knownApp, StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(knownApp.Replace("_", " "));
+                    }
+                }
+            }
+
+            // If no known app is found, clean up the window title
+            string cleanedTitle = ExtractRelevantTitle(windowTitle);
+            return !string.IsNullOrWhiteSpace(cleanedTitle) ? cleanedTitle : "this program";
+        }
+
+        private readonly HashSet<string> ignoredTitles = new() { "mainwindow", "application", "untitled", "new document", "welcome screen" };
+
+        private string ExtractRelevantTitle(string windowTitle)
+        {
+            if (string.IsNullOrWhiteSpace(windowTitle) || windowTitle.Length < 3)
+                return "this program";
+
+            string lowerTitle = windowTitle.ToLower();
+            if (ignoredTitles.Contains(lowerTitle))
+                return "this program";
+
+            // Remove clutter
+            string cleaned = Regex.Replace(windowTitle, @"[\[\(].*?[\]\)]", ""); // Remove [Bracketed Text]
+            cleaned = Regex.Replace(cleaned, @"[-–—:|].*", ""); // Remove everything after -, –, —, :, or |
+
+            return cleaned.Trim();
+        }
+
+
 
         /// <summary>
         /// Gets details of the currently active process (name, window title, and uptime).
@@ -57,15 +97,19 @@ namespace VPet.Plugin.LolisBuddy
 
                 // Extract details
                 string processName = proc.ProcessName ?? "Unknown";
-                string windowTitle = GetActiveWindowTitle(hWnd);
+                string windowTitle = GetBestAppName(processName, GetActiveWindowTitle(hWnd), processesManager.CategoryMapping);
                 TimeSpan uptime = GetProcessUptime(proc);
                 string date = DateTime.Now.ToString();
-                string category = "";
+                string category = processesManager.Categorize(processName, windowTitle)[0];
+                string webpage = WebpageDetector.Categorize(GetActiveWindowTitle(hWnd));
+                if (webpage != "") windowTitle = webpage;
                 if (!processesManager.IsBlacklisted(processName))
                 {
-                    List<string> info = processesManager.Categorize(processName, windowTitle);
-                    category = info[0];
-                    windowTitle = info[1];
+                    window.Title = windowTitle;
+                    window.Category = category;
+                    window.Date = date;
+                    window.Runtime = uptime.Minutes;
+                    window.Process = processName;
                 }
                 else return;
 
@@ -103,7 +147,7 @@ namespace VPet.Plugin.LolisBuddy
                 }
 
 
-                iOManager.SaveLPS(windows, MemoryPath, "memory");
+                iOManager.SaveLPS(windows, MemoryPath, "memory", true);
 
             }
             catch (Exception ex)

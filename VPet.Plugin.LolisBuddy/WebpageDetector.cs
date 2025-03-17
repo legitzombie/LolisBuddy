@@ -34,7 +34,7 @@ namespace VPet.Plugin.LolisBuddy
                 }
             }
 
-            return windowTitle;
+            return "";
         }
 
 

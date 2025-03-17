@@ -1,11 +1,12 @@
-﻿using LinePutScript;
-using LinePutScript.Converter;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Media;
 using System.Reflection;
+using System.Windows;
+using LinePutScript;
+using LinePutScript.Converter;
 using VPet_Simulator.Core;
 using VPet_Simulator.Windows.Interface;
 
@@ -32,15 +33,15 @@ namespace VPet.Plugin.LolisBuddy
         private AnimationManager animationManager = new AnimationManager();
         private int lastDialogue = 0; // how long since last dialogue
 
-        public DialogueManager()
+        public DialogueManager(string name)
         {
-            LoadDialogues();
+            LoadDialogues(name);
         }
 
         /// Loads all dialogues from .lps files in the "text" folder
-        public void LoadDialogues()
+        public void LoadDialogues(string name)
         {
-            dialogues = iOManager.LoadLPS<DialogueEntry>(TextFolderPath);
+            if (name == "speech") dialogues = iOManager.LoadLPS<DialogueEntry>(TextFolderPath);
         }
 
         public void playEffect(bool play)
@@ -53,7 +54,6 @@ namespace VPet.Plugin.LolisBuddy
 
         public void Talk(IMainWindow main, string msg = null)
         {
-            windowManager.UpdateActiveWindowDetails();
             main.Main.Say(msg ?? dialogue?.Dialogue ?? string.Empty);
         }
 
@@ -64,7 +64,7 @@ namespace VPet.Plugin.LolisBuddy
 
         public void PlayDialogue(Setting setting, IMainWindow MW)
         {
-            if (setting.Debug)
+            if (setting.Debug && setting.Name == "speech")
             {
                 Talk(MW, animationManager.debugMessage());
             }
@@ -72,7 +72,7 @@ namespace VPet.Plugin.LolisBuddy
             {
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
                 {
-                    GetRandomDialogue(animationManager.animation);
+                    GetRandomDialogue(setting.Name, animationManager.animation);
                     Talk(MW);
                     playEffect(setting.SoundEffect);
                 });
@@ -81,16 +81,16 @@ namespace VPet.Plugin.LolisBuddy
 
         public void HandleDialogue(Setting setting, IMainWindow MW, TimerManager talkTimer)
         {
+
             lastDialogue += setting.DelayTimer;
             setting.Load();
-            talkTimer.UpdateTimerInterval("speech", setting.DelayTimer);
+            talkTimer.UpdateTimerInterval(setting.Name, setting.DelayTimer);
 
             animationManager.fetchAnimation(MW);
 
             if (canTalk(lastDialogue, setting))
             {
-                PlayDialogue(setting,MW);
-                lastDialogue = 0;
+                PlayDialogue(setting, MW);
             }
         }
 
@@ -98,24 +98,32 @@ namespace VPet.Plugin.LolisBuddy
         /// <summary>
         /// Selects a random dialogue entry based on Type, Name, and Mood
         /// </summary>
-        public DialogueEntry GetRandomDialogue(GraphInfo animation)
+        public void GetRandomDialogue(string Name, GraphInfo animation)
         {
 
             var type = animation.Type.ToString();
             var name = animation.Name;
             var mood = animation.ModeType.ToString();
+            List<DialogueEntry> filteredDialogues = new List<DialogueEntry>();
 
-            var filteredDialogues = dialogues.Where(d =>
+            if (Name == "speech")
+            {
+                filteredDialogues = dialogues.Where(d =>
                 string.Equals(d.Type, type, StringComparison.OrdinalIgnoreCase) &&
                 string.Equals(d.Mood, mood, StringComparison.OrdinalIgnoreCase) &&
                 (type.Equals("default", StringComparison.OrdinalIgnoreCase) || string.Equals(d.Name, name, StringComparison.OrdinalIgnoreCase))
-            ).ToList();
+                ).ToList();
+                if (filteredDialogues.Count == 0) { return; }
+                dialogue = filteredDialogues[random.Next(filteredDialogues.Count)];
+            }
 
-            if (filteredDialogues.Count == 0)
-                return null;
+            if (Name == "AIspeech")
+            {
+                windowManager.UpdateActiveWindowDetails();
+                dialogue = new LanguageManager().GenerateDialogue(windowManager.window, mood);
+            }
 
-            dialogue = filteredDialogues[random.Next(filteredDialogues.Count)];
-            return dialogue;
+            if (dialogue.Dialogue.Length > 0) lastDialogue = 0;
         }
 
     }

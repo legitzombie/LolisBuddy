@@ -8,13 +8,19 @@ namespace VPet.Plugin.LolisBuddy
     public class LolisBuddy : MainPlugin
     {
         private readonly TimerManager talkTimer = new TimerManager();
-        private readonly DialogueManager dialogueManager = new DialogueManager();
+        private readonly TimerManager AItalkTimer = new TimerManager();
         private readonly Setting setting = new Setting();
+        private DialogueManager dialogueManager;
+        private readonly AIManager aiManager = new AIManager();
+        private DialogueManager AIdialogueManager;
+
 
         public LolisBuddy(IMainWindow mainwin) : base(mainwin) { }
 
         public override void LoadPlugin()
         {
+            dialogueManager = new DialogueManager(setting.Name);
+            AIdialogueManager = new DialogueManager(aiManager.settings().Name);
             setting.Load();
             InitializeTimer();
             AddSettingsMenu();
@@ -22,7 +28,8 @@ namespace VPet.Plugin.LolisBuddy
 
         private void InitializeTimer()
         {
-            talkTimer.AddOrUpdateTimer("speech", setting.DelayTimer, () => dialogueManager.HandleDialogue(setting, MW, talkTimer));
+            talkTimer.AddOrUpdateTimer(setting.Name, setting.DelayTimer, () => dialogueManager.HandleDialogue(setting, MW, talkTimer));
+            AItalkTimer.AddOrUpdateTimer(setting.Name, aiManager.settings().DelayTimer, () => AIdialogueManager.HandleDialogue(aiManager.settings(), MW, AItalkTimer));
         }
 
         private void AddSettingsMenu()
