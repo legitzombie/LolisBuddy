@@ -7,14 +7,11 @@ Currently supports custom animation dialogues, sounds and basic memory.
 ## Features / Roadmap:
 
 ✅ Customize Any Animation – Attach unique dialogue and sound effects to every action.
-
-✅ Basic intelligence - Early framework for machine learning.
-
-✅ Self awareness - Knows how it's being treated and what you're doing, mostly. 
-
-❌ ChatGPT Integration - Optional toggle to let user generate dialogue through AI.
-
-❌ Self learning AI - Local Neural Network playing the game by itself and studying your behaviors.
+✅ Basic intelligence - Lolis Can remember things
+✅ Self awareness - Lolis Is aware of how it's being treated and what you're doing, mostly. 
+✅ Dialogue Generation - Lolis understands the english language and can craft sentences.
+❌ Personality - Lolis develops its own opinions and might get pissy or troll you.
+❌ Self learning AI - Lolis is constantly evolving, you start believing it could be alive.
 
 ## 📢 How to edit / add dialogue or sounds:
 
