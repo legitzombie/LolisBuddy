@@ -39,44 +39,6 @@ namespace VPet.Plugin.LolisBuddy
             windows = iOManager.LoadLPS<ActiveWindow>(MemoryPath, "memory", true);
         }
 
-        private string GetBestAppName(string processName, string windowTitle, Dictionary<string, HashSet<string>> categoryMapping)
-        {
-            foreach (var category in categoryMapping)
-            {
-                foreach (var knownApp in category.Value)
-                {
-                    if (processName.IndexOf(knownApp, StringComparison.OrdinalIgnoreCase) >= 0)
-                    {
-                        return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(knownApp.Replace("_", " "));
-                    }
-                }
-            }
-
-            // If no known app is found, clean up the window title
-            string cleanedTitle = ExtractRelevantTitle(windowTitle);
-            return !string.IsNullOrWhiteSpace(cleanedTitle) ? cleanedTitle : "this program";
-        }
-
-        private readonly HashSet<string> ignoredTitles = new() { "mainwindow", "application", "untitled", "new document", "welcome screen" };
-
-        private string ExtractRelevantTitle(string windowTitle)
-        {
-            if (string.IsNullOrWhiteSpace(windowTitle) || windowTitle.Length < 3)
-                return "this program";
-
-            string lowerTitle = windowTitle.ToLower();
-            if (ignoredTitles.Contains(lowerTitle))
-                return "this program";
-
-            // Remove clutter
-            string cleaned = Regex.Replace(windowTitle, @"[\[\(].*?[\]\)]", ""); // Remove [Bracketed Text]
-            cleaned = Regex.Replace(cleaned, @"[-–—:|].*", ""); // Remove everything after -, –, —, :, or |
-
-            return cleaned.Trim();
-        }
-
-
-
         /// <summary>
         /// Gets details of the currently active process (name, window title, and uptime).
         /// </summary>
@@ -97,10 +59,12 @@ namespace VPet.Plugin.LolisBuddy
 
                 // Extract details
                 string processName = proc.ProcessName ?? "Unknown";
-                string windowTitle = GetBestAppName(processName, GetActiveWindowTitle(hWnd), processesManager.CategoryMapping);
+                string windowTitle = GetActiveWindowTitle(hWnd);
                 TimeSpan uptime = GetProcessUptime(proc);
                 string date = DateTime.Now.ToString();
-                string category = processesManager.Categorize(processName, windowTitle)[0];
+                List<string> info = processesManager.Categorize(processName, windowTitle);
+                string category = info[0];
+                windowTitle = info[1];
 
                 if (category == "Browser") { 
                     List<string> webpage = WebpageDetector.Categorize(GetActiveWindowTitle(hWnd), category);
