@@ -2,6 +2,8 @@
 using System.Windows.Controls;
 using System.Windows;
 using LinePutScript.Localization.WPF;
+using System.Reflection;
+using System.IO;
 
 namespace VPet.Plugin.LolisBuddy
 {
@@ -9,18 +11,25 @@ namespace VPet.Plugin.LolisBuddy
     {
         private readonly TimerManager talkTimer = new TimerManager();
         private readonly TimerManager AItalkTimer = new TimerManager();
+        private readonly TimerManager idleTimer = new TimerManager();
+        private readonly SleepTracker sleepTracker = new SleepTracker();
         private readonly Setting setting = new Setting();
         private DialogueManager dialogueManager;
         private readonly AIManager aiManager = new AIManager();
         private DialogueManager AIdialogueManager;
+
+        private static readonly string DialogueFolderPath = Path.Combine(
+    Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? "",
+    @"text\"
+);
 
 
         public LolisBuddy(IMainWindow mainwin) : base(mainwin) { }
 
         public override void LoadPlugin()
         {
-            dialogueManager = new DialogueManager(setting.Name);
-            AIdialogueManager = new DialogueManager(aiManager.settings().Name);
+            dialogueManager = new DialogueManager(null, DialogueFolderPath);
+            AIdialogueManager = new DialogueManager();
             setting.Load();
             InitializeTimer();
             AddSettingsMenu();
@@ -29,7 +38,8 @@ namespace VPet.Plugin.LolisBuddy
         private void InitializeTimer()
         {
             talkTimer.AddOrUpdateTimer(setting.Name, setting.DelayTimer, () => dialogueManager.HandleDialogue(setting, MW, talkTimer));
-            AItalkTimer.AddOrUpdateTimer(setting.Name, aiManager.settings().DelayTimer, () => AIdialogueManager.HandleDialogue(aiManager.settings(), MW, AItalkTimer));
+            AItalkTimer.AddOrUpdateTimer(aiManager.setting.Name, aiManager.setting.DelayTimer, () => AIdialogueManager.HandleDialogue(aiManager.setting, MW, AItalkTimer, aiManager));
+            idleTimer.AddOrUpdateTimer("idle", 60000, () => sleepTracker.CheckUserActivity());
         }
 
         private void AddSettingsMenu()

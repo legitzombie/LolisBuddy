@@ -7,7 +7,7 @@ namespace VPet.Plugin.LolisBuddy
 {
     public class WebpageDetector
     {
-        private static readonly Dictionary<string, HashSet<string>> WebsiteCategories = new()
+        public static readonly Dictionary<string, HashSet<string>> WebsiteCategories = new()
         {
             { "Social Media", new() { "facebook", "twitter", "instagram", "tiktok", "reddit", "linkedin", "snapchat", "threads" } },
             { "Streaming", new() { "youtube", "twitch", "netflix", "hulu", "disney+", "prime video", "spotify", "crunchyroll", "hbomax" } },
@@ -19,7 +19,7 @@ namespace VPet.Plugin.LolisBuddy
             { "Education", new() { "khan academy", "coursera", "udemy", "duolingo", "wikipedia", "edx", "codecademy" } }
         };
 
-        public static List<string> Categorize(string windowTitle, string Category)
+        public static List<string> Categorize(string windowTitle, string Category = "Browser")
         {
 
             windowTitle = windowTitle.ToLower();

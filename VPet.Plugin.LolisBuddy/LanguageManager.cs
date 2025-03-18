@@ -356,6 +356,7 @@ namespace VPet.Plugin.LolisBuddy
             DialogueEntry dialogue = new DialogueEntry();
             dialogue.Mood = mood;
             dialogue.Dialogue = $"{subject} {ending}";
+            dialogue.Type = category;
             return dialogue;
         }
 

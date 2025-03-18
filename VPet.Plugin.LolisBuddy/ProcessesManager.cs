@@ -20,7 +20,7 @@ namespace VPet.Plugin.LolisBuddy
             { "Messaging App", new() { "discord", "slack", "telegram", "whatsapp", "zoom", "skype", "teams", "signal", "messenger" } },
             { "Development Tool", new() { "visualstudio", "vscode", "jetbrains", "eclipse", "androidstudio", "xcode", "devenv" } },
             { "Text Editor", new() { "notepad", "notepad++", "sublime_text", "atom" } },
-            { "Image Editor", new() { "photoshop", "gimp", "paintdotnet", "krita", "coreldraw" } },
+            { "Image Editor", new() { "photoshop", "gimp", "paintdotnet", "krita", "coreldraw" , "paint"} },
             { "3D Modeling Software", new() { "blender", "maya", "3dsmax", "cinema4d", "zbrush" } },
             { "Rigging Tool", new() { "autorig", "mixamo", "houdini" } },
             { "Game Engine", new() { "unity", "unreal", "godot", "cryengine", "gamemaker" } },
@@ -54,25 +54,34 @@ namespace VPet.Plugin.LolisBuddy
             string category = "Uncategorized";
             string title = windowTitle; // Default to the original title
 
-            // Prioritize detecting a game first
-            if (GameDetector.HasGameDLLs(processName))
-            {
-                category = "Game";
-            }
+
 
             // Iterate through category mappings
             foreach (var entry in CategoryMapping)
             {
                 foreach (var keyword in entry.Value)
                 {
-                    if (keyword == processName || windowTitle.Contains(keyword))
+                    if (processName.Contains(keyword))
                     {
-                        category = entry.Key;
-                        title = keyword; // Set the title to the matched keyword
-
+                        if (entry.Key == "Browser")
+                        {
+                            List<string> webpage = WebpageDetector.Categorize(windowTitle);
+                            category = webpage[1]; title = webpage[0];
+                        }
+                        else
+                        {
+                            category = entry.Key;
+                            title = keyword; // Set the title to the matched keyword
+                        }
                         return new List<string> { category, title }; // Return immediately after the first match
                     }
                 }
+            }
+
+            // Prioritize detecting a game first
+            if (GameDetector.HasGameDLLs(processName) && category == "Uncategorized" && !IsBlacklisted(processName))
+            {
+                category = "Game";
             }
 
 

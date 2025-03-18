@@ -14,10 +14,6 @@ namespace VPet.Plugin.LolisBuddy
 {
     public class DialogueManager
     {
-        private static readonly string TextFolderPath = Path.Combine(
-            Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? "",
-            @"text\"
-        );
 
         private static readonly string SoundFolderPath = Path.Combine(
              Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? "",
@@ -25,23 +21,26 @@ namespace VPet.Plugin.LolisBuddy
         );
 
         private List<DialogueEntry> dialogues = new List<DialogueEntry>();
+
         private IOManager iOManager = new IOManager();
+        private AIManager AIManager = new AIManager();
         public DialogueEntry dialogue { get; private set; }
         private Random random = new Random();
-
+        private TimerManager timerManager = new TimerManager();
         private WindowManager windowManager = new WindowManager();
         private AnimationManager animationManager = new AnimationManager();
         private int lastDialogue = 0; // how long since last dialogue
 
-        public DialogueManager(string name)
+        public DialogueManager(string name = null, string path = null, bool encrypted = false)
         {
-            LoadDialogues(name);
+            LoadDialogues(name, path, encrypted);
+            timerManager.AddOrUpdateTimer("activewindowupdater", 1000, () => windowManager.UpdateActiveWindowDetails());
         }
 
         /// Loads all dialogues from .lps files in the "text" folder
-        public void LoadDialogues(string name)
+        public void LoadDialogues(string name, string path, bool encrypted)
         {
-            if (name == "speech") dialogues = iOManager.LoadLPS<DialogueEntry>(TextFolderPath);
+            dialogues = iOManager.LoadLPS<DialogueEntry>(path, name, encrypted);
         }
 
         public void playEffect(bool play)
@@ -62,7 +61,7 @@ namespace VPet.Plugin.LolisBuddy
             return timerElapsed > setting.DelayTalk && random.Next(100) < setting.ChanceTalk;
         }
 
-        public void PlayDialogue(Setting setting, IMainWindow MW)
+        public void PlayDialogue(Setting setting, IMainWindow MW, AIManager aIManager = null)
         {
             if (setting.Debug && setting.Name == "speech")
             {
@@ -72,14 +71,14 @@ namespace VPet.Plugin.LolisBuddy
             {
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
                 {
-                    GetRandomDialogue(setting.Name, animationManager.animation);
+                    GetRandomDialogue(setting.Name, animationManager.animation, aIManager);
                     Talk(MW);
                     playEffect(setting.SoundEffect);
                 });
             }
         }
 
-        public void HandleDialogue(Setting setting, IMainWindow MW, TimerManager talkTimer)
+        public void HandleDialogue(Setting setting, IMainWindow MW, TimerManager talkTimer, AIManager aIManager = null)
         {
 
             lastDialogue += setting.DelayTimer;
@@ -90,7 +89,7 @@ namespace VPet.Plugin.LolisBuddy
 
             if (canTalk(lastDialogue, setting))
             {
-                PlayDialogue(setting, MW);
+                PlayDialogue(setting, MW, aIManager);
             }
         }
 
@@ -98,7 +97,7 @@ namespace VPet.Plugin.LolisBuddy
         /// <summary>
         /// Selects a random dialogue entry based on Type, Name, and Mood
         /// </summary>
-        public void GetRandomDialogue(string Name, GraphInfo animation)
+        public void GetRandomDialogue(string Name, GraphInfo animation, AIManager AIManager = null)
         {
 
             var type = animation.Type.ToString();
@@ -119,8 +118,11 @@ namespace VPet.Plugin.LolisBuddy
 
             if (Name == "AIspeech")
             {
-                windowManager.UpdateActiveWindowDetails();
+                //windowManager.UpdateActiveWindowDetails();
                 dialogue = new LanguageManager().GenerateSentence(mood, windowManager.window.Category.ToString());
+                List<DialogueEntry> allreplies = AIManager.SpeechMemory;
+                allreplies.Add(dialogue);
+                iOManager.SaveLPS(allreplies, AIManager.SpeechMemoryFolderPath, null, true);
             }
 
             if (dialogue.Dialogue.Length > 0) lastDialogue = 0;

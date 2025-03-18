@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Windows;
 using LinePutScript;
 using LinePutScript.Converter;
@@ -16,8 +17,6 @@ namespace VPet.Plugin.LolisBuddy
 {
     public class WindowManager
     {
-
-        private static readonly string MemoryPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
         [DllImport("user32.dll")]
         private static extern IntPtr GetForegroundWindow(); // Get active window handle
@@ -36,8 +35,45 @@ namespace VPet.Plugin.LolisBuddy
 
         public WindowManager()
         {
-            windows = iOManager.LoadLPS<ActiveWindow>(MemoryPath, "memory", true);
+            windows = iOManager.LoadLPS<ActiveWindow>(AIManager.ActionMemoryPath, "user", true);
         }
+
+        public void CategorizeBehavior()
+        {
+            List<ProgramBehavior> behavior = new List<ProgramBehavior>();
+
+            // Dictionary to track unique categories and their total runtime
+            Dictionary<string, int> categoryRuntimeMap = new Dictionary<string, int>();
+
+            foreach (var window in windows)
+            {
+                string category = window.Category;
+                if (category == "Uncategorized") continue;
+                if (WebpageDetector.WebsiteCategories.ContainsKey(category)) category = window.Title;
+                if (categoryRuntimeMap.ContainsKey(category))
+                {
+                    categoryRuntimeMap[category] += window.Runtime;
+                }
+                else
+                {
+                    categoryRuntimeMap[category] = window.Runtime;
+                }
+            }
+
+            // Convert dictionary to a sorted list of UserBehavior objects (descending by runtime)
+            behavior = categoryRuntimeMap
+                .OrderByDescending(entry => entry.Value)
+                .Select(entry => new ProgramBehavior
+                {
+                    Category = entry.Key,
+                    Runtime = entry.Value
+                })
+                .ToList();
+
+            iOManager.SaveLPS(behavior, AIManager.BehaviorMemoryFolderPath, "user_likes", true);
+        }
+
+
 
         /// <summary>
         /// Gets details of the currently active process (name, window title, and uptime).
@@ -58,73 +94,60 @@ namespace VPet.Plugin.LolisBuddy
                 Process proc = Process.GetProcessById(processId);
 
                 // Extract details
-                string processName = proc.ProcessName ?? "Unknown";
+                string processName = proc?.ProcessName ?? "Unknown";
                 string windowTitle = GetActiveWindowTitle(hWnd);
-                TimeSpan uptime = GetProcessUptime(proc);
                 string date = DateTime.Now.ToString();
                 List<string> info = processesManager.Categorize(processName, windowTitle);
                 string category = info[0];
                 windowTitle = info[1];
 
-                if (category == "Browser") { 
-                    List<string> webpage = WebpageDetector.Categorize(GetActiveWindowTitle(hWnd), category);
-                    category = webpage[1];  windowTitle = webpage[0];
-                }
-
-                if (!processesManager.IsBlacklisted(processName))
-                {
-                    window.Title = windowTitle;
-                    window.Category = category;
-                    window.Date = date;
-                    window.Runtime = uptime.Minutes;
-                    window.Process = processName;
-                }
-                else return;
-
-                    //MessageBox.Show($"App: {processName}.exe \n Title: {windowTitle} \n Category: {category} \n Usage: {uptime.Minutes}mins \n Last Used: {date}");
+                // Update window details
+                window.Title = windowTitle;
+                window.Category = category;
+                window.Date = date;
+                window.Process = processName;
+                window.Runtime += 2000; // Increment by 1 minute for categorized websites
 
 
-                ActiveWindow existingWindow = windows.Find(w => w.Process == processName);
+                // Find an existing window entry
+                ActiveWindow existingWindow = WebpageDetector.WebsiteCategories.ContainsKey(category)
+                    ? windows.Find(w => w.Category == category) // Match by category for websites
+                    : windows.Find(w => w.Process == processName && w.Title == windowTitle); // Match process & title for apps
 
                 if (existingWindow != null)
                 {
-
-                    existingWindow.Runtime = uptime.Minutes;
                     existingWindow.Date = date;
+                    existingWindow.Runtime += 2000; // Increment runtime for categorized websites
 
                 }
                 else
                 {
-
+                    int run = 0;
 
                     windows.Add(new ActiveWindow
                     {
                         Process = processName,
                         Title = windowTitle,
-                        Runtime = uptime.Minutes,
+                        Runtime = run,
                         Date = date,
                         Category = category
                     });
 
-                    int beforeCount = windows.Count;
+                    // Remove duplicate entries (keeping the first occurrence)
                     windows = windows.GroupBy(w => new { w.Process, w.Title })
                                      .Select(g => g.First())
                                      .ToList();
-                    int afterCount = windows.Count;
-
                 }
 
-
-                iOManager.SaveLPS(windows, MemoryPath, "memory", true);
-
+                // Save the updated list
+                iOManager.SaveLPS(windows, AIManager.ActionMemoryPath, "user", true);
+                CategorizeBehavior();
             }
-            catch (Exception ex)
+            catch (IOException)
             {
-                MessageBox.Show($"[ERROR] Failed to retrieve process details: {ex.Message}");
+                
             }
         }
-
-
 
         /// <summary>
         /// Gets the window title of the given window handle.
@@ -135,21 +158,6 @@ namespace VPet.Plugin.LolisBuddy
             GetWindowText(hWnd, title, 256);
             return title.ToString();
         }
-
-        /// <summary>
-        /// Safely gets the uptime of a process.
-        /// </summary>
-        private static TimeSpan GetProcessUptime(Process proc)
-        {
-            try
-            {
-                return DateTime.Now - proc.StartTime;
-            }
-            catch
-            {
-                return TimeSpan.Zero; // If access to StartTime is denied
-            }
-        }
     }
 
     public class ActiveWindow
@@ -159,5 +167,11 @@ namespace VPet.Plugin.LolisBuddy
         [Line] public int Runtime { get; set; }
         [Line] public string Date { get; set; }
         [Line] public string Category { get; set; }
+    }
+
+    public class ProgramBehavior
+    {
+        [Line] public string Category { get; set; }
+        [Line] public int Runtime { get; set; }
     }
 }

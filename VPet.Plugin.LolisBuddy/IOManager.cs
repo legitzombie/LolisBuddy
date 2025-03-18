@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Windows;
 using LinePutScript;
 using LinePutScript.Converter;
@@ -15,8 +17,18 @@ namespace VPet.Plugin.LolisBuddy
 
         public IOManager() { }
 
-        public List<T> LoadLPS<T>(string path, string name = null, bool encrypted = false) where T : new()
+        private string setDefaultPath(string path)
         {
+            if (path == null)
+            {
+                return Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            }
+            return path;
+        }
+
+        public List<T> LoadLPS<T>(string path = null, string name = null, bool encrypted = false) where T : new()
+        {
+            path = setDefaultPath(path);
             EnsureDirectoryExists(path);
             List<T> lines = new List<T>();
 
@@ -28,11 +40,8 @@ namespace VPet.Plugin.LolisBuddy
                 {
                     string fileContent = File.ReadAllText(fi.FullName, Encoding.UTF8);
 
-                    if (name != null && encrypted)
-                    {
-                        fileContent = ASCIIManager.RemoveASCII("VPet.Plugin.LolisBuddy.ASCII.baka.txt", fileContent);
-                        fileContent = securityManager.DecryptLines(fileContent);
-                    }
+                    if (path.Contains("memory")) { fileContent = ASCIIManager.RemoveASCII("VPet.Plugin.LolisBuddy.ASCII.baka.txt", fileContent); }
+                    if (encrypted) { fileContent = securityManager.DecryptLines(fileContent); }
 
                     foreach (ILine li in new LpsDocument(fileContent))
                     {
@@ -52,11 +61,13 @@ namespace VPet.Plugin.LolisBuddy
             if (!Directory.Exists(path)) Directory.CreateDirectory(path);
         }
 
-        public void SaveLPS(object obj, string path, string name, bool encrypt = false)
+        public void SaveLPS(object obj, string path = null, string name = null, bool encrypt = false)
         {
             try
             {
+                path = setDefaultPath(path);
                 EnsureDirectoryExists(path);
+                name ??= DateTime.Now.Date.ToString("yyyy-MM-dd");
                 string filePath = Path.Combine(path, name + ".lps");
 
                 if (obj == null) throw new ArgumentNullException(nameof(obj), "Cannot save a null object.");
@@ -81,11 +92,12 @@ namespace VPet.Plugin.LolisBuddy
                 if (encrypt) File.AppendAllLines(filePath, lines, Encoding.UTF8);
                 else File.WriteAllLines(filePath, lines, Encoding.UTF8);
             }
-            catch (Exception ex)
+            catch (IOException)
             {
-                MessageBox.Show($"Error saving object to {path}: {ex.Message}");
+                
             }
         }
+
 
         private string FormatLPS(object obj, string name, bool encrypt)
         {
