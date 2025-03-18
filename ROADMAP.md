@@ -20,7 +20,7 @@
 - ✅ Track **when user is active/inactive**
 - ✅ Recognize **consistent sleep patterns** (or lack of them)
 - ☐ Comment on **bad sleep habits** (e.g., *"Another x AM gaming session? Nice."*)
-- ☐ Get **more passive-aggressive** about sleep deprivation over time
+- ☐ Gets more **anal** about sleep deprivation over time (e.g., normal > sad > snarky > "sick" > "dying")
 - ☐ "Pretend to fall asleep" when the user stays up too late
 
 ---
