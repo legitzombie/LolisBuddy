@@ -4,6 +4,8 @@ using System.Globalization;
 using System.Runtime.InteropServices;
 using LinePutScript.Converter;
 using System.Linq;
+using System.Windows.Markup.Primitives;
+using VPet_Simulator.Windows.Interface;
 
 namespace VPet.Plugin.LolisBuddy
 {
@@ -15,6 +17,8 @@ namespace VPet.Plugin.LolisBuddy
 
         private IOManager iOManager = new IOManager();
 
+        public SleepTracker() { }
+
         [DllImport("user32.dll")]
         private static extern bool GetLastInputInfo(ref LASTINPUTINFO plii);
 
@@ -25,9 +29,8 @@ namespace VPet.Plugin.LolisBuddy
             public uint dwTime;
         }
 
-        public void CheckUserActivity()
+        public void CheckUserActivity(IMainWindow MW)
         {
-            AnalyzeSleepPattern();
 
             int idleTimeMinutes = GetIdleTime() / 60000;
 
@@ -45,6 +48,8 @@ namespace VPet.Plugin.LolisBuddy
                     DateTime wakeTime = DateTime.Now;
                     LogSleepData(sleepStart.Value, wakeTime);
                     sleepStart = null;
+                    AnalyzeSleepPattern();
+                    MW.Main.Say(LanguageManager.GenerateSentence(MW.Main.DisplayType.ModeType.ToString(), "Break").Dialogue);
                 }
             }
         }

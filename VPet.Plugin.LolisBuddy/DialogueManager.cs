@@ -119,7 +119,7 @@ namespace VPet.Plugin.LolisBuddy
             if (Name == "AIspeech")
             {
                 //windowManager.UpdateActiveWindowDetails();
-                dialogue = new LanguageManager().GenerateSentence(mood, windowManager.window.Category.ToString());
+                dialogue = LanguageManager.GenerateSentence(mood, windowManager.window.Category.ToString());
                 List<DialogueEntry> allreplies = AIManager.SpeechMemory;
                 allreplies.Add(dialogue);
                 iOManager.SaveLPS(allreplies, AIManager.SpeechMemoryFolderPath, null, true);

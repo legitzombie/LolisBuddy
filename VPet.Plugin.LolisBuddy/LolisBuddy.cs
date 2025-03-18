@@ -39,7 +39,7 @@ namespace VPet.Plugin.LolisBuddy
         {
             talkTimer.AddOrUpdateTimer(setting.Name, setting.DelayTimer, () => dialogueManager.HandleDialogue(setting, MW, talkTimer));
             AItalkTimer.AddOrUpdateTimer(aiManager.setting.Name, aiManager.setting.DelayTimer, () => AIdialogueManager.HandleDialogue(aiManager.setting, MW, AItalkTimer, aiManager));
-            idleTimer.AddOrUpdateTimer("idle", 60000, () => sleepTracker.CheckUserActivity());
+            idleTimer.AddOrUpdateTimer("idle", 60000, () => sleepTracker.CheckUserActivity(MW));
         }
 
         private void AddSettingsMenu()

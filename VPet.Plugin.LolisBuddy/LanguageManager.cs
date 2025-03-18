@@ -11,7 +11,7 @@ namespace VPet.Plugin.LolisBuddy
 
 
         // Sentence components for each category
-        private Dictionary<string, List<string>> subjects = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase)
+        private static Dictionary<string, List<string>> subjects = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase)
 {
      { "Browser", new List<string>
         {
@@ -271,15 +271,19 @@ namespace VPet.Plugin.LolisBuddy
             "Watching educational videos", "Taking notes that I'll never read", "Trying to memorize facts",
             "Procrastinating on assignments", "Looking up tutorials", "Feeling smart for a moment"
         }
+    },
+    { "Break", new List<string>
+        {
+            "Finally, some fresh air! Oh wait, you’re back..."
+        }
     }
-
 
 
 
     };
 
 
-        private Dictionary<string, List<string>> moodEndings = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase)
+        private static Dictionary<string, List<string>> moodEndings = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase)
         {
     { "Happy", new List<string>
         {
@@ -344,7 +348,7 @@ namespace VPet.Plugin.LolisBuddy
 
 
         // Generate a sentence
-        public DialogueEntry GenerateSentence(string mood, string category)
+        public static DialogueEntry GenerateSentence(string mood, string category)
         {
 
             if (!moodEndings.ContainsKey(mood)) mood = "Nomal";
