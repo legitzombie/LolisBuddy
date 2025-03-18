@@ -32,7 +32,7 @@
 - ✅ If **working** → *"Another spreadsheet? You sure know how to have fun."*
 - ✅ If **ignored** → *"Hello? Do I even exist?"*
 - ✅ If user **takes a break** → *"Finally, some fresh air! Oh wait, you’re back..."*
-- ☐ If user **opens an unpopular app** → *"Who even uses this?"*
+- ✅ If user **opens an unpopular app** → *"Who even uses this?"*
 
 ### Facial Animations for Mood
 - ☐ **😠 Angry face** when user opens a hated program
