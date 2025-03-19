@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Windows;
 using LinePutScript;
 using LinePutScript.Converter;
 
@@ -35,7 +30,7 @@ namespace VPet.Plugin.LolisBuddy
 
         public WindowManager()
         {
-            windows = iOManager.LoadLPS<ActiveWindow>(AIManager.ActionMemoryPath, "user", true);
+            windows = iOManager.LoadLPS<ActiveWindow>(AIManager.MemoryTypePath(AIManager.ActionMemoryPath), null, true, true);
         }
 
         public void CategorizeBehavior()
@@ -70,7 +65,7 @@ namespace VPet.Plugin.LolisBuddy
                 })
                 .ToList();
 
-            iOManager.SaveLPS(behavior, AIManager.BehaviorMemoryFolderPath, "user_likes", true);
+            iOManager.SaveLPS(behavior, AIManager.BehaviorMemoryFolderPath, "preferences", true);
         }
 
 
@@ -140,12 +135,13 @@ namespace VPet.Plugin.LolisBuddy
                 }
 
                 // Save the updated list
-                iOManager.SaveLPS(windows, AIManager.ActionMemoryPath, "user", true);
+                iOManager.SaveLPS(windows, AIManager.MemoryTypePath(AIManager.ActionMemoryPath, false), null, true);
+                iOManager.SaveLPS(windows, AIManager.MemoryTypePath(AIManager.ActionMemoryPath, true), null, true);
                 CategorizeBehavior();
             }
             catch (IOException)
             {
-                
+
             }
         }
 

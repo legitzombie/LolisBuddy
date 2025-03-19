@@ -66,7 +66,7 @@ namespace VPet.Plugin.LolisBuddy
         /// </summary>
         public void Load()
         {
-            if ( Name == "speech")
+            if (Name == "speech")
             {
                 Setting loadedSettings = iOManager.LoadLPS<Setting>(ConfigPath, "config")[0];
                 Set(loadedSettings);

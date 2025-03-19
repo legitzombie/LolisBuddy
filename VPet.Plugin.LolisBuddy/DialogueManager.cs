@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Media;
 using System.Reflection;
-using System.Windows;
 using LinePutScript;
 using LinePutScript.Converter;
 using VPet_Simulator.Core;
@@ -23,7 +22,7 @@ namespace VPet.Plugin.LolisBuddy
         private List<DialogueEntry> dialogues = new List<DialogueEntry>();
 
         private IOManager iOManager = new IOManager();
-        private AIManager AIManager = new AIManager();
+        private AIManager aIManager = new AIManager();
         public DialogueEntry dialogue { get; private set; }
         private Random random = new Random();
         private TimerManager timerManager = new TimerManager();
@@ -31,16 +30,16 @@ namespace VPet.Plugin.LolisBuddy
         private AnimationManager animationManager = new AnimationManager();
         private int lastDialogue = 0; // how long since last dialogue
 
-        public DialogueManager(string name = null, string path = null, bool encrypted = false)
+        public DialogueManager(string name = null, string path = null, bool encrypted = false, bool erase = false)
         {
-            LoadDialogues(name, path, encrypted);
+            LoadDialogues(name, path, encrypted, erase);
             timerManager.AddOrUpdateTimer("activewindowupdater", 1000, () => windowManager.UpdateActiveWindowDetails());
         }
 
         /// Loads all dialogues from .lps files in the "text" folder
-        public void LoadDialogues(string name, string path, bool encrypted)
+        public void LoadDialogues(string name, string path, bool encrypted, bool erase = false)
         {
-            dialogues = iOManager.LoadLPS<DialogueEntry>(path, name, encrypted);
+            dialogues = iOManager.LoadLPS<DialogueEntry>(path, name, encrypted, erase);
         }
 
         public void playEffect(bool play)
@@ -104,7 +103,9 @@ namespace VPet.Plugin.LolisBuddy
             var name = animation.Name;
             var mood = animation.ModeType.ToString();
             List<DialogueEntry> filteredDialogues = new List<DialogueEntry>();
+            AIManager.updateMemory();
 
+            // short term memory
             if (Name == "speech")
             {
                 filteredDialogues = dialogues.Where(d =>
@@ -114,15 +115,18 @@ namespace VPet.Plugin.LolisBuddy
                 ).ToList();
                 if (filteredDialogues.Count == 0) { return; }
                 dialogue = filteredDialogues[random.Next(filteredDialogues.Count)];
-            }
 
+                List<DialogueEntry> allreplies = AIManager.ShortSpeechMemory;
+                allreplies.Add(dialogue);
+                iOManager.SaveLPS(allreplies, AIManager.MemoryTypePath(AIManager.SpeechMemoryFolderPath, true), null, true, true);
+            }
+            // long term memory
             if (Name == "AIspeech")
             {
-                //windowManager.UpdateActiveWindowDetails();
                 dialogue = LanguageManager.GenerateSentence(mood, windowManager.window.Category.ToString());
                 List<DialogueEntry> allreplies = AIManager.SpeechMemory;
                 allreplies.Add(dialogue);
-                iOManager.SaveLPS(allreplies, AIManager.SpeechMemoryFolderPath, null, true);
+                iOManager.SaveLPS(allreplies, AIManager.MemoryTypePath(AIManager.SpeechMemoryFolderPath, false), null, true, true);
             }
 
             if (dialogue.Dialogue.Length > 0) lastDialogue = 0;

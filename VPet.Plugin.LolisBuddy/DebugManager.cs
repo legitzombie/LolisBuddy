@@ -14,7 +14,7 @@ namespace VPet.Plugin.LolisBuddy
         private IOManager ioManager = new IOManager();
         public void logError(DebugEntry error)
         {
-            ioManager.SaveLPS(error, LogFolderPath, error.Title);
+            ioManager.SaveLPS(error, LogFolderPath, error.Title, false, true);
         }
     }
 

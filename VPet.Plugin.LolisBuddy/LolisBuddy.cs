@@ -1,9 +1,9 @@
-﻿using VPet_Simulator.Windows.Interface;
-using System.Windows.Controls;
-using System.Windows;
-using LinePutScript.Localization.WPF;
+﻿using System.IO;
 using System.Reflection;
-using System.IO;
+using System.Windows;
+using System.Windows.Controls;
+using LinePutScript.Localization.WPF;
+using VPet_Simulator.Windows.Interface;
 
 namespace VPet.Plugin.LolisBuddy
 {

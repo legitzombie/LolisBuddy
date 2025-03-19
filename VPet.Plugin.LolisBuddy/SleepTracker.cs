@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
+using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using LinePutScript.Converter;
-using System.Linq;
-using System.Windows.Markup.Primitives;
 using VPet_Simulator.Windows.Interface;
 
 namespace VPet.Plugin.LolisBuddy
@@ -16,6 +15,8 @@ namespace VPet.Plugin.LolisBuddy
         private static DateTime? sleepStart = null;
 
         private IOManager iOManager = new IOManager();
+
+        string idlePath = Path.Combine(AIManager.BehaviorMemoryFolderPath, "idle");
 
         public SleepTracker() { }
 
@@ -68,13 +69,22 @@ namespace VPet.Plugin.LolisBuddy
             sleep.wakeTime = wakeTime.ToString();
             sleep.durationTime = (wakeTime - sleepTime).ToString();
 
-            iOManager.SaveLPS(sleep, AIManager.BehaviorMemoryFolderPath, "user_schedule", true);
+
+            if ((wakeTime - sleepTime).Hours >= 6) sleep.category = "sleep";
+            else if ((wakeTime - sleepTime).Hours <= 1) sleep.category = "short_break";
+            else sleep.category = "long_break";
+
+            iOManager.SaveLPS(sleep, AIManager.MemoryTypePath(idlePath, false), null, true, true);
+            iOManager.SaveLPS(sleep, AIManager.MemoryTypePath(idlePath, true), null, true, true);
         }
 
 
         private void AnalyzeSleepPattern()
         {
-            List<IdleEntry> sleepEntries = iOManager.LoadLPS<IdleEntry>(AIManager.BehaviorMemoryFolderPath, "user_schedule", true);
+            List<IdleEntry> sleepEntries = iOManager
+                .LoadLPS<IdleEntry>(AIManager.MemoryTypePath(idlePath, false), null, true, true)
+                .Where(entry => entry.category == "sleep")
+                .ToList();
 
             if (sleepEntries == null || sleepEntries.Count == 0)
             {
@@ -120,7 +130,7 @@ namespace VPet.Plugin.LolisBuddy
             else
                 sleepSchedule.consistent = false;
 
-            iOManager.SaveLPS(sleepSchedule, AIManager.BehaviorMemoryFolderPath, "user_sleep_schedule", false);
+            iOManager.SaveLPS(sleepSchedule, AIManager.BehaviorMemoryFolderPath, "sleep_schedule", true, false);
         }
 
     }
@@ -130,5 +140,6 @@ namespace VPet.Plugin.LolisBuddy
         [Line] public string wakeTime { set; get; }
         [Line] public string durationTime { set; get; }
         [Line] public bool consistent { set; get; }
+        [Line] public string category { set; get; }
     }
 }

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace VPet.Plugin.LolisBuddy
+﻿namespace VPet.Plugin.LolisBuddy
 {
     using System;
     using System.Diagnostics;
