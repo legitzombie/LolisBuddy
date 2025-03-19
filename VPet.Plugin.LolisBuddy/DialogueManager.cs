@@ -103,11 +103,11 @@ namespace VPet.Plugin.LolisBuddy
             var name = animation.Name;
             var mood = animation.ModeType.ToString();
             List<DialogueEntry> filteredDialogues = new List<DialogueEntry>();
-            AIManager.updateMemory();
 
             // short term memory
             if (Name == "speech")
             {
+                aIManager.updateMemory();
                 filteredDialogues = dialogues.Where(d =>
                 string.Equals(d.Type, type, StringComparison.OrdinalIgnoreCase) &&
                 string.Equals(d.Mood, mood, StringComparison.OrdinalIgnoreCase) &&
@@ -116,13 +116,14 @@ namespace VPet.Plugin.LolisBuddy
                 if (filteredDialogues.Count == 0) { return; }
                 dialogue = filteredDialogues[random.Next(filteredDialogues.Count)];
 
-                List<DialogueEntry> allreplies = AIManager.ShortSpeechMemory;
+                List<DialogueEntry> allreplies = aIManager.ShortSpeechMemory;
                 allreplies.Add(dialogue);
                 iOManager.SaveLPS(allreplies, AIManager.MemoryTypePath(AIManager.SpeechMemoryFolderPath, true), null, true, true);
             }
             // long term memory
             if (Name == "AIspeech")
             {
+                AIManager.updateMemory();
                 dialogue = LanguageManager.GenerateSentence(mood, windowManager.window.Category.ToString());
                 List<DialogueEntry> allreplies = AIManager.SpeechMemory;
                 allreplies.Add(dialogue);
