@@ -12,7 +12,7 @@ namespace VPet.Plugin.LolisBuddy
     public class LolisBuddy : MainPlugin
     {
         private TimerManager GameTalkTimer;
-        private TimerManager AITalkTimer; 
+        private TimerManager AITalkTimer;
 
         private TimerManager personalityTimer = new TimerManager("AIpersonality", 6000, 100);
         private readonly TimerManager idleTimer = new TimerManager("idle", 10000, 100);
@@ -28,12 +28,14 @@ namespace VPet.Plugin.LolisBuddy
 
         public override void LoadPlugin()
         {
+            AIsetting.Name = "AIspeech";
+
             setting.Load();
             AIsetting.Load();
-            AIsetting.Name = "AIspeech";
+
             AIManager.Instance.updateMemory();
-            GameTalkTimer = new TimerManager("speech", setting.DelayTimer, setting.ChanceTalk);
-            AITalkTimer = new TimerManager("AIspeech", AIsetting.DelayTimer, AIsetting.ChanceTalk);
+            GameTalkTimer = new TimerManager(setting.Name, setting.DelayTimer, setting.ChanceTalk);
+            AITalkTimer = new TimerManager(AIsetting.Name, AIsetting.DelayTimer, AIsetting.ChanceTalk);
             InitializeTimers();
             AddSettingsMenu();
         }
