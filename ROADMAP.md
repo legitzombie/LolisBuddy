@@ -8,17 +8,17 @@
 
 - ✅ Categorize **frequent behaviors** (e.g., *"User plays games a lot", "User works nonstop"*)
 
-- ☐ Develop **opinions based on habits** (e.g., *loves work, hates gaming*)
+- ✅ Develop **opinions based on habits** (e.g., *loves work, hates gaming*)
 
 - ✅ Implement **short-term and long-term memory** for dynamic responses
 
-- ☐ Store "favorite" and "least favorite" things over time
+- ✅ Store "favorite" and "least favorite" things over time
 
 ### Personality Shifts Over Time
 
 - ✅ Start **neutral**
 
-- ☐ Slowly develop **likes & dislikes** based on **repeated exposure**
+- ✅ Slowly develop **likes & dislikes** based on **repeated exposure**
 
 - ☐ Change **dialogue & behavior** based on **new personality**
 
