@@ -10,19 +10,27 @@ namespace VPet.Plugin.LolisBuddy
     public partial class winSetting : Window
     {
         public Setting UserSettings { get; set; }
+        public Setting LolisBuddySettings { get; set; }
 
         public winSetting()
         {
             InitializeComponent();
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
-            UserSettings = LolisBuddy.setting; // Load or create settings instance
-            UserSettings.Load(); // Load settings from file
-            DataContext = UserSettings;
+
+            UserSettings = LolisBuddy.setting; 
+            LolisBuddySettings = LolisBuddy.AIsetting;
+
+            UserSettings.Load(); 
+            LolisBuddySettings.Load();
+
+            GameTab.DataContext = UserSettings;
+            LolisBuddyTab.DataContext = LolisBuddySettings;
         }
 
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
-            UIManager.Save(); // Save settings when clicking the button
+            UserSettings.Save();
+            LolisBuddySettings.Save();
             Close();
         }
     }

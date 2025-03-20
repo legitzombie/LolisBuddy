@@ -1,114 +1,365 @@
-﻿<Window x:Class="VPet.Plugin.LolisBuddy.winSetting"
+﻿<Window x:Class="VPet.Plugin.LolisBuddy.winSetting" 
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="LolisBuddy Settings" Height="260" Width="400" ResizeMode="NoResize"
-        Background="#1E1E1E" WindowStartupLocation="CenterScreen">
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:System="clr-namespace:System;assembly=mscorlib"
+        xmlns:ll="clr-namespace:LinePutScript.Localization.WPF;assembly=LinePutScript.Localization.WPF"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:local="clr-namespace:VPet.Plugin.LolisBuddy"
+        xmlns:pu="clr-namespace:Panuon.WPF.UI;assembly=Panuon.WPF.UI"
+        mc:Ignorable="d"
+        Title="LolisBuddy Settings" 
+        Height="340" Width="400" 
+        ResizeMode="NoResize"
+        Background="#1E1E1E" 
+        WindowStartupLocation="CenterScreen" 
+        Foreground="black">
 
-    <Grid Margin="20">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="10"/>
-            <!-- Spacer -->
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="10"/>
-            <!-- Spacer -->
-            <RowDefinition Height="Auto"/>
+    <Window.Resources>
+        <ResourceDictionary Source="/VPet-Simulator.Windows.Interface;component/ResourceStyle.xaml" />
+    </Window.Resources>
+
+
+    <TabControl Background="#1E1E1E" BorderThickness="0" Foreground="Pink"   >
+
+        <TabItem Header="Game" x:Name="GameTab" IsSelected="True" Background="black" Foreground="pink" BorderBrush="pink" FontSize="16" OpacityMask="#FF0C0C0C">
             
-            <!-- Expands to push button down -->
-            <RowDefinition Height="40"/>
-            <RowDefinition Height="40"/>
-        </Grid.RowDefinitions>
+            <Grid Background="#1E1E1E" Margin="10">
 
-        <!-- Styles -->
-        <Grid.Resources>
-            <Style TargetType="TextBlock">
-                <Setter Property="Foreground" Value="Pink"/>
-                <Setter Property="FontSize" Value="16"/>
-                <Setter Property="VerticalAlignment" Value="Center"/>
-            </Style>
-            <Style TargetType="CheckBox">
-                <Setter Property="Foreground" Value="Pink"/>
-                <Setter Property="FontSize" Value="16"/>
-                <Setter Property="Background" Value="Black"/>
-            </Style>
-            <Style TargetType="Button">
-                <Setter Property="Foreground" Value="Pink"/>
-                <Setter Property="Background" Value="Black"/>
-                <Setter Property="FontSize" Value="16"/>
-                <Setter Property="Padding" Value="8"/>
-            </Style>
-            <Style TargetType="TextBox">
-                <Setter Property="FontSize" Value="16"/>
-                <Setter Property="Width" Value="120"/>
-                <Setter Property="Background" Value="Black"/>
-                <Setter Property="Foreground" Value="Pink"/>
-            </Style>
-            <Style TargetType="Slider">
-                <Setter Property="Width" Value="120"/>
-                <Setter Property="Minimum" Value="0"/>
-                <Setter Property="Maximum" Value="100"/>
-                <Setter Property="Height" Value="30"/>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="Slider">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="Auto"/>
 
-                                <!-- Track Background -->
-                                <Border Grid.Row="1" Height="6" Background="Black" CornerRadius="3"/>
+                </Grid.RowDefinitions>
 
-                                <!-- The actual interactive Track -->
-                                <Track Grid.Row="1" Name="PART_Track">
-                                    <Track.Thumb>
-                                        <Thumb Width="16" Height="16" Background="Pink" 
-                                   BorderBrush="White" BorderThickness="1"/>
-                                    </Track.Thumb>
-                                    <Track.IncreaseRepeatButton>
-                                        <RepeatButton Width="0" Height="6" Background="Transparent"/>
-                                    </Track.IncreaseRepeatButton>
-                                    <Track.DecreaseRepeatButton>
-                                        <RepeatButton Width="0" Height="6" Background="Pink"/>
-                                    </Track.DecreaseRepeatButton>
-                                </Track>
-                            </Grid>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-        </Grid.Resources>
+                <Grid.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Foreground" Value="Pink"/>
+                        <Setter Property="FontSize" Value="16"/>
+                        <Setter Property="VerticalAlignment" Value="Center"/>
+                    </Style>
+                    <Style TargetType="CheckBox">
+                        <Setter Property="Foreground" Value="Pink"/>
+                        <Setter Property="FontSize" Value="16"/>
+                        <Setter Property="Background" Value="Black"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="CheckBox">
+                                    <StackPanel Orientation="Horizontal">
+                                        <!-- Checkbox Border -->
+                                        <Border Width="16" Height="16" BorderBrush="Pink" BorderThickness="1" 
+                            CornerRadius="3" Background="Black">
+                                            <!-- Checkmark -->
+                                            <Path x:Name="CheckMark" Visibility="Collapsed"
+                              Stroke="Pink" StrokeThickness="2" Data="M2,8 L6,12 L14,2"/>
+                                        </Border>
+                                        <ContentPresenter VerticalAlignment="Center" Margin="5,0,0,0"/>
+                                    </StackPanel>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsChecked" Value="True">
+                                            <Setter TargetName="CheckMark" Property="Visibility" Value="Visible"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                    <Style TargetType="Button">
 
-        <!-- Delay Timer -->
-        <TextBlock Text="Interval:" Grid.Row="0" />
-        <TextBox Text="{Binding DelayTimer, UpdateSourceTrigger=PropertyChanged}" 
-                 Grid.Row="0" HorizontalAlignment="Right" Margin="0,0,50,0"/>
+                        <Setter Property="Foreground" Value="Pink"/>
+                        <Setter Property="Background" Value="Black"/>
+                        <Setter Property="FontSize" Value="16"/>
+                        <Setter Property="Padding" Value="8"/>
+                        <Setter Property="BorderBrush" Value="Pink"/>
+                        <Setter Property="BorderThickness" Value="1"/>
 
-        <!-- Delay Talk -->
-        <TextBlock Text="Speech Delay:" Grid.Row="2"/>
-        <TextBox Text="{Binding DelayTalk, UpdateSourceTrigger=PropertyChanged}" 
-                 Grid.Row="2" HorizontalAlignment="Right" Margin="0,0,50,0"/>
+                        <Style.Triggers>
 
-        <!-- Chance Talk (Slider + Value) -->
-        <TextBlock Text="Speech Chance:" Grid.Row="4"/>
-        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Slider Minimum="0" Maximum="100" Width="120" Margin="0,0,0,0"
-                    Value="{Binding ChanceTalk, UpdateSourceTrigger=PropertyChanged}"/>
-            <TextBlock Text="{Binding ChanceTalk}" Width="50" TextAlignment="Center"/>
-        </StackPanel>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="Pink"/>
+                                <Setter Property="Foreground" Value="Black"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#FF1493"/>
+                                <!-- Darker Pink When Pressed -->
+                                <Setter Property="Foreground" Value="Black"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
 
-        <!-- Enable Debug -->
-        <CheckBox Content="Enable Debug" IsChecked="{Binding Debug}" Grid.Row="5"
-                  VerticalAlignment="Bottom" Margin="30,10,0,10" HorizontalAlignment="Left"/>
-        <CheckBox Content="Enable Sound" IsChecked="{Binding SoundEffect}" Grid.Row="5"
-          VerticalAlignment="Bottom" Margin="0,10,30,10" HorizontalAlignment="Right"/>
+                    <Style TargetType="TextBox">
+                        <Setter Property="FontSize" Value="16"/>
+                        <Setter Property="Width" Value="120"/>
+                        <Setter Property="Background" Value="Black"/>
+                        <Setter Property="Foreground" Value="Pink"/>
+                        <Setter Property="BorderBrush" Value="Pink"/>
+                        <Setter Property="BorderThickness" Value="1"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter Property="BorderBrush" Value="Pink"/>
+                                <Setter Property="BorderThickness" Value="1"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="BorderBrush" Value="Pink"/>
+                                <Setter Property="BorderThickness" Value="1"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
 
-        <!-- Save Button -->
-        <Button Content="Save Settings" Grid.Row="6" HorizontalAlignment="Center"
-                Click="SaveButton_Click"/>
-    </Grid>
+                    <ControlTemplate x:Key="CustomThumbTemplate" TargetType="Thumb">
+                        <Grid>
+                            <Ellipse Width="16" Height="16" Fill="Pink" Stroke="Black" StrokeThickness="1"/>
+                        </Grid>
+                    </ControlTemplate>
+
+
+
+                    <Style TargetType="Slider">
+                        <Setter Property="Width" Value="120"/>
+                        <Setter Property="Minimum" Value="0"/>
+                        <Setter Property="Maximum" Value="100"/>
+                        <Setter Property="Height" Value="30"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Slider">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
+
+                                        <!-- Background track -->
+                                        <Border Grid.Row="1" Height="6" Background="Black" CornerRadius="3" HorizontalAlignment="Stretch"/>
+
+                                        <Track Grid.Row="1" Name="PART_Track" VerticalAlignment="Center">
+                                            <Track.DecreaseRepeatButton>
+                                                <RepeatButton Width="0" Height="6" Background="Pink"/>
+                                            </Track.DecreaseRepeatButton>
+                                            <Track.IncreaseRepeatButton>
+                                                <RepeatButton Width="0" Height="6" Background="Transparent"/>
+                                            </Track.IncreaseRepeatButton>
+                                            <Track.Thumb>
+                                                <Thumb Width="16" Height="16" Background="Pink"
+                                   BorderBrush="Pink" BorderThickness="0"
+                                   Template="{StaticResource CustomThumbTemplate}"/>
+                                            </Track.Thumb>
+                                        </Track>
+                                    </Grid>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+
+                </Grid.Resources>
+
+
+
+                <!-- Interval -->
+                <TextBlock Text="Interval:" Grid.Row="0" />
+                <TextBox Text="{Binding DelayTimer, UpdateSourceTrigger=PropertyChanged}" 
+                             Grid.Row="0" HorizontalAlignment="Right" Margin="0,0,50,0"/>
+
+                <!-- Speech Delay -->
+                <TextBlock Text="Speech Delay:" Grid.Row="2"/>
+                <TextBox Text="{Binding DelayTalk, UpdateSourceTrigger=PropertyChanged}" 
+                             Grid.Row="2" HorizontalAlignment="Right" Margin="0,0,50,0"/>
+
+                <!-- Speech Chance (Slider + Value) -->
+                <TextBlock Text="Speech Chance:" Grid.Row="4"/>
+                <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Slider Minimum="0" Maximum="100" Width="120" Margin="0,0,0,0"
+                                Value="{Binding ChanceTalk, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBlock Text="{Binding ChanceTalk}" Width="50" TextAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Enable Debug -->
+                <CheckBox Content="Enable Debug" IsChecked="{Binding Debug}" Grid.Row="6"
+                              VerticalAlignment="Bottom" Margin="30,10,0,10" HorizontalAlignment="Left" />
+                <CheckBox Content="Enable Sound" IsChecked="{Binding SoundEffect}" Grid.Row="6"
+                              VerticalAlignment="Bottom" Margin="0,10,30,10" HorizontalAlignment="Right"/>
+
+                <!-- Save Button -->
+                <Button Content="Save Settings" Grid.Row="8" HorizontalAlignment="Center"
+                            Click="SaveButton_Click" Margin="0,0,0,40" Grid.RowSpan="2" />
+            </Grid>
+        </TabItem>
+
+
+        <TabItem Header="LolisBuddy" x:Name="LolisBuddyTab" IsSelected="False" Background="Black" Foreground="Pink">
+            <Grid Background="#1E1E1E" Margin="10">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="Auto"/>
+
+                </Grid.RowDefinitions>
+
+                <Grid.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Foreground" Value="Pink"/>
+                        <Setter Property="FontSize" Value="16"/>
+                        <Setter Property="VerticalAlignment" Value="Center"/>
+                    </Style>
+                    <Style TargetType="CheckBox">
+                        <Setter Property="Foreground" Value="Pink"/>
+                        <Setter Property="FontSize" Value="16"/>
+                        <Setter Property="Background" Value="Black"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="CheckBox">
+                                    <StackPanel Orientation="Horizontal">
+                                        <!-- Checkbox Border -->
+                                        <Border Width="16" Height="16" BorderBrush="Pink" BorderThickness="1" 
+                            CornerRadius="3" Background="Black">
+                                            <!-- Checkmark -->
+                                            <Path x:Name="CheckMark" Visibility="Collapsed"
+                              Stroke="Pink" StrokeThickness="2" Data="M2,8 L6,12 L14,2"/>
+                                        </Border>
+                                        <ContentPresenter VerticalAlignment="Center" Margin="5,0,0,0"/>
+                                    </StackPanel>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsChecked" Value="True">
+                                            <Setter TargetName="CheckMark" Property="Visibility" Value="Visible"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Foreground" Value="Pink"/>
+                        <Setter Property="Background" Value="Black"/>
+                        <Setter Property="FontSize" Value="16"/>
+                        <Setter Property="Padding" Value="8"/>
+                        <Setter Property="BorderBrush" Value="Pink"/>
+                        <Setter Property="BorderThickness" Value="1"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="Pink"/>
+                                <Setter Property="Foreground" Value="Black"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#FF1493"/>
+                                <!-- Darker Pink When Pressed -->
+                                <Setter Property="Foreground" Value="Black"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+
+                    <Style TargetType="TextBox">
+                        <Setter Property="FontSize" Value="16"/>
+                        <Setter Property="Width" Value="120"/>
+                        <Setter Property="Background" Value="Black"/>
+                        <Setter Property="Foreground" Value="Pink"/>
+                        <Setter Property="BorderBrush" Value="Pink"/>
+                        <Setter Property="BorderThickness" Value="1"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter Property="BorderBrush" Value="Pink"/>
+                                <Setter Property="BorderThickness" Value="1"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="BorderBrush" Value="Pink"/>
+                                <Setter Property="BorderThickness" Value="1"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+
+                    <ControlTemplate x:Key="CustomThumbTemplate" TargetType="Thumb">
+                        <Grid>
+                            <Ellipse Width="16" Height="16" Fill="Pink" Stroke="Black" StrokeThickness="1"/>
+                        </Grid>
+                    </ControlTemplate>
+
+
+
+                    <Style TargetType="Slider">
+                        <Setter Property="Width" Value="120"/>
+                        <Setter Property="Minimum" Value="0"/>
+                        <Setter Property="Maximum" Value="100"/>
+                        <Setter Property="Height" Value="30"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Slider">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
+
+                                        <!-- Background track -->
+                                        <Border Grid.Row="1" Height="6" Background="Black" CornerRadius="3" HorizontalAlignment="Stretch"/>
+
+                                        <Track Grid.Row="1" Name="PART_Track" VerticalAlignment="Center">
+                                            <Track.DecreaseRepeatButton>
+                                                <RepeatButton Width="0" Height="6" Background="Pink"/>
+                                            </Track.DecreaseRepeatButton>
+                                            <Track.IncreaseRepeatButton>
+                                                <RepeatButton Width="0" Height="6" Background="Transparent"/>
+                                            </Track.IncreaseRepeatButton>
+                                            <Track.Thumb>
+                                                <Thumb Width="16" Height="16" Background="Pink"
+                                   BorderBrush="Pink" BorderThickness="0"
+                                   Template="{StaticResource CustomThumbTemplate}"/>
+                                            </Track.Thumb>
+                                        </Track>
+                                    </Grid>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+
+                </Grid.Resources>
+
+
+
+                <!-- Interval -->
+                <TextBlock Text="Interval:" Grid.Row="0" />
+                <TextBox Text="{Binding DelayTimer, UpdateSourceTrigger=PropertyChanged}" 
+                             Grid.Row="0" HorizontalAlignment="Right" Margin="0,0,50,0"/>
+
+                <!-- Speech Delay -->
+                <TextBlock Text="Speech Delay:" Grid.Row="2"/>
+                <TextBox Text="{Binding DelayTalk, UpdateSourceTrigger=PropertyChanged}" 
+                             Grid.Row="2" HorizontalAlignment="Right" Margin="0,0,50,0"/>
+
+                <!-- Speech Chance (Slider + Value) -->
+                <TextBlock Text="Speech Chance:" Grid.Row="4"/>
+                <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Slider Minimum="0" Maximum="100" Width="120" Margin="0,0,0,0"
+                                Value="{Binding ChanceTalk, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBlock Text="{Binding ChanceTalk}" Width="50" TextAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Enable Debug -->
+                <CheckBox Content="Enable Debug" IsChecked="{Binding Debug}" Grid.Row="6"
+                              VerticalAlignment="Bottom" Margin="30,10,0,10" HorizontalAlignment="Left" />
+                <CheckBox Content="Enable Sound" IsChecked="{Binding SoundEffect}" Grid.Row="6"
+                              VerticalAlignment="Bottom" Margin="0,10,30,10" HorizontalAlignment="Right"/>
+
+                <!-- Save Button -->
+                <Button Content="Save Settings" Grid.Row="8" HorizontalAlignment="Center"
+                            Click="SaveButton_Click" Margin="0,0,0,40" Grid.RowSpan="2" />
+            </Grid>
+            
+        </TabItem>
+        
+    </TabControl>
+    
 </Window>
-
-
-

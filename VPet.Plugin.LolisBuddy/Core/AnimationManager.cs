@@ -24,7 +24,7 @@ namespace VPet.Plugin.LolisBuddy.Core
 
         public GraphInfo animation { get; private set; } = new GraphInfo();
 
-        public void fetchAnimation(IMainWindow main)
+        public void updateAnimation(IMainWindow main)
         {
             animation = main.Main.DisplayType;
         }

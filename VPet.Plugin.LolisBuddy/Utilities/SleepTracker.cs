@@ -28,9 +28,9 @@ namespace VPet.Plugin.LolisBuddy.Utilities
             public uint dwTime;
         }
 
-        public void CheckUserActivity(IMainWindow MW)
+        public static void CheckUserActivity(IMainWindow MW)
         {
-
+           
             int idleTimeMinutes = GetIdleTime() / 60000;
 
             if (idleTimeMinutes >= InactivityThresholdMinutes)
@@ -53,14 +53,14 @@ namespace VPet.Plugin.LolisBuddy.Utilities
             }
         }
 
-        private int GetIdleTime()
+        private static int GetIdleTime()
         {
             LASTINPUTINFO lii = new LASTINPUTINFO { cbSize = (uint)Marshal.SizeOf(typeof(LASTINPUTINFO)) };
             GetLastInputInfo(ref lii);
             return Environment.TickCount - (int)lii.dwTime;
         }
 
-        private void LogSleepData(DateTime sleepTime, DateTime wakeTime)
+        private static void LogSleepData(DateTime sleepTime, DateTime wakeTime)
         {
             IdleEntry sleep = new IdleEntry();
             sleep.sleepTime = sleepTime.ToString();
@@ -72,15 +72,16 @@ namespace VPet.Plugin.LolisBuddy.Utilities
             else if ((wakeTime - sleepTime).Hours <= 1) sleep.category = "short_break";
             else sleep.category = "long_break";
 
-            IOManager.SaveLPS(sleep, FolderPath.Get("memory", "behavior", "sleep", "long_term"), null, true, true);
-            IOManager.SaveLPS(sleep, FolderPath.Get("memory", "behavior", "sleep", "short_term"), null, true, true);
+            AIManager.IdleMemory.Add(sleep);
+            AIManager.ShortIdleMemory.Add(sleep);
+            AIManager.Instance.saveMemory("idle");
         }
 
 
-        private void AnalyzeSleepPattern()
+        private static void AnalyzeSleepPattern()
         {
-            List<IdleEntry> sleepEntries = IOManager
-                .LoadLPS<IdleEntry>(FolderPath.Get("memory", "behavior", "sleep", "long_term"), null, true, true)
+            List<IdleEntry> sleepEntries = AIManager
+                .IdleMemory
                 .Where(entry => entry.category == "sleep")
                 .ToList();
 
@@ -128,7 +129,8 @@ namespace VPet.Plugin.LolisBuddy.Utilities
             else
                 sleepSchedule.consistent = false;
 
-            IOManager.SaveLPS(sleepSchedule, FolderPath.Get("memory", "behavior"), "sleep_schedule", true, false);
+            AIManager.SleepMemory = new List<IdleEntry>() { sleepSchedule };
+            AIManager.Instance.saveMemory("sleep");
         }
 
     }

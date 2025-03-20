@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Windows;
 using LinePutScript;
 using LinePutScript.Converter;
 using VPet.Plugin.LolisBuddy.ASCII;
@@ -26,9 +27,6 @@ namespace VPet.Plugin.LolisBuddy.Sys
             path = setDefaultPath(path);
             EnsureDirectoryExists(path);
             List<T> lines = new List<T>();
-            if (path.Contains("memory")) name ??= DateTime.Now.Date.ToString("yyyy-MM-dd");
-
-            if (erase) EraseOldestFile(path, name);
 
             foreach (FileInfo fi in new DirectoryInfo(path).EnumerateFiles("*.lps"))
             {
@@ -37,10 +35,10 @@ namespace VPet.Plugin.LolisBuddy.Sys
                 try
                 {
                     string fileContent = File.ReadAllText(fi.FullName, Encoding.UTF8);
+                    fileContent = ASCIIManager.RemoveASCII("VPet.Plugin.LolisBuddy.ASCII.Ressources.baka.txt", fileContent);
 
                     if (encrypted)
                     {
-                        fileContent = ASCIIManager.RemoveASCII("VPet.Plugin.LolisBuddy.ASCII.Ressources.baka.txt", fileContent);
                         fileContent = SecurityManager.DecryptLines(fileContent);
                     }
 
@@ -54,6 +52,10 @@ namespace VPet.Plugin.LolisBuddy.Sys
 
                 }
             }
+
+            if (erase && name == null) EraseOldestFile(path, DateTime.Now.Date.ToString("yyyy-MM-dd"));
+            else if (erase) EraseOldestFile(path, name);
+
             return lines;
         }
 

@@ -9,7 +9,12 @@ namespace VPet.Plugin.LolisBuddy.Core
         private Dictionary<string, Timer> timers = new Dictionary<string, Timer>();
         private Dictionary<string, ElapsedEventHandler> eventHandlers = new Dictionary<string, ElapsedEventHandler>();
 
-        public TimerManager(string name, int delay, int chance) { this.name = name; interval = delay; this.chance = chance; }
+        public TimerManager(string name, int delay, int chance)
+        {
+            this.name = name;
+            interval = delay;
+            this.chance = chance;
+        }
 
         public string name { get; set; }
         public int interval { get; set; }
@@ -17,29 +22,32 @@ namespace VPet.Plugin.LolisBuddy.Core
 
         public void AddOrUpdateTimer(Action callback)
         {
-
             if (timers.ContainsKey(name))
             {
                 UpdateTimerInterval(name, interval, chance);
                 return;
             }
 
-            Timer timer = new Timer(interval);
-            timer.AutoReset = false; // Prevent overlapping executions
-
-            // Define the event handler separately to prevent multiple subscriptions
-            ElapsedEventHandler handler = null;
-            handler = (sender, e) =>
+            Timer timer = new Timer(interval)
             {
-                timer.Stop(); // Stop execution to prevent overlapping calls
-                callback();
-                timer.Start(); // Restart after execution completes
+                AutoReset = true, // Ensure it repeats
+                Enabled = true
+            };
+
+            ElapsedEventHandler handler = (sender, e) =>
+            {
+                try
+                {
+                    callback();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Timer callback error: {ex.Message}");
+                }
             };
 
             timer.Elapsed += handler;
-            eventHandlers[name] = handler; // Store handler to manage unsubscribing later
-            timer.Enabled = true;
-
+            eventHandlers[name] = handler;
             timers[name] = timer;
         }
 
@@ -47,11 +55,12 @@ namespace VPet.Plugin.LolisBuddy.Core
         {
             if (timers.TryGetValue(name, out Timer timer))
             {
-                timer.Enabled = false; // Fully disable before changing the interval
+                timer.Stop();
                 timer.Interval = newInterval;
                 interval = newInterval;
                 this.chance = chance;
-                timer.Enabled = true;
+
+                timer.Start(); // ✅ Ensure it restarts after updating
             }
         }
 
@@ -61,7 +70,7 @@ namespace VPet.Plugin.LolisBuddy.Core
             {
                 if (eventHandlers.TryGetValue(name, out ElapsedEventHandler handler))
                 {
-                    timer.Elapsed -= handler; // Unsubscribe handler to prevent memory leaks
+                    timer.Elapsed -= handler;
                     eventHandlers.Remove(name);
                 }
 

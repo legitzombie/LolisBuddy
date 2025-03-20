@@ -11,14 +11,15 @@ namespace VPet.Plugin.LolisBuddy
 {
     public class LolisBuddy : MainPlugin
     {
-        private TimerManager shortTermTalkTimer;
-        private readonly TimerManager longTermTalkTimer = new TimerManager("AIspeech", 30000, 3);
-        private readonly TimerManager idleTimer = new TimerManager("idle", 60000, 100);
+        private TimerManager GameTalkTimer;
+        private TimerManager AITalkTimer; 
+
+        private TimerManager personalityTimer = new TimerManager("AIpersonality", 6000, 100);
+        private readonly TimerManager idleTimer = new TimerManager("idle", 10000, 100);
         private readonly TimerManager windowTimer = new TimerManager("activewindowupdater", 1000, 100);
 
-        private readonly SleepTracker sleepTracker = new SleepTracker();
-
         public static Setting setting = new Setting();
+        public static Setting AIsetting = new Setting();
 
         private DialogueManager shortTermDialogueManager = new DialogueManager(FolderPath.Get("text"));
         private DialogueManager longTermDialogueManager = new DialogueManager();
@@ -28,24 +29,28 @@ namespace VPet.Plugin.LolisBuddy
         public override void LoadPlugin()
         {
             setting.Load();
+            AIsetting.Load();
+            AIsetting.Name = "AIspeech";
             AIManager.Instance.updateMemory();
-            shortTermTalkTimer = new TimerManager("speech", setting.DelayTimer, setting.ChanceTalk);
+            GameTalkTimer = new TimerManager("speech", setting.DelayTimer, setting.ChanceTalk);
+            AITalkTimer = new TimerManager("AIspeech", AIsetting.DelayTimer, AIsetting.ChanceTalk);
             InitializeTimers();
             AddSettingsMenu();
         }
 
         private void InitializeTimers()
         {
-            shortTermTalkTimer.AddOrUpdateTimer(() =>
-                shortTermDialogueManager.HandleDialogue(MW, shortTermTalkTimer));
+            GameTalkTimer.AddOrUpdateTimer(() =>
+                shortTermDialogueManager.HandleDialogue(MW, GameTalkTimer));
 
-            longTermTalkTimer.AddOrUpdateTimer(() =>
-                 longTermDialogueManager.HandleDialogue(MW, longTermTalkTimer));
+            AITalkTimer.AddOrUpdateTimer(() =>
+                 longTermDialogueManager.HandleDialogue(MW, AITalkTimer));
 
             windowTimer.AddOrUpdateTimer(() => WindowManager.UpdateActiveWindowDetails());
 
+            idleTimer.AddOrUpdateTimer(() => SleepTracker.CheckUserActivity(MW));
 
-            idleTimer.AddOrUpdateTimer(() => sleepTracker.CheckUserActivity(MW));
+            personalityTimer.AddOrUpdateTimer(() => PreferenceManager.Instance.Update());
         }
 
         private void AddSettingsMenu()

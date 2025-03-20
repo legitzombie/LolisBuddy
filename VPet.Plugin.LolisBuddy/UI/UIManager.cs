@@ -26,13 +26,6 @@ namespace VPet.Plugin.LolisBuddy.UI
             }
         }
 
-        /// <summary>
-        /// Saves current settings to config.lps
-        /// </summary>
-        public static void Save()
-        {
-            IOManager.SaveLPS(LolisBuddy.setting, FolderPath.Get(), "config");
-            LolisBuddy.setting.Load();
-        }
+
     }
 }

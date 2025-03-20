@@ -46,7 +46,7 @@ namespace VPet.Plugin.LolisBuddy.Core
 
         public void PlayDialogue(IMainWindow MW, TimerManager timer)
         {
-            AnimationManager.Instance.fetchAnimation(MW);
+            AnimationManager.Instance.updateAnimation(MW);
             if (LolisBuddy.setting.Debug) Talk(MW, AnimationManager.Instance.debugMessage());
             else { 
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
@@ -67,6 +67,7 @@ namespace VPet.Plugin.LolisBuddy.Core
             lastDialogue += delay;
 
             if (name == "speech") timer.UpdateTimerInterval(LolisBuddy.setting.Name, LolisBuddy.setting.DelayTimer, LolisBuddy.setting.ChanceTalk);
+            else if (name == "AIspeech") timer.UpdateTimerInterval(LolisBuddy.AIsetting.Name, LolisBuddy.AIsetting.DelayTimer, LolisBuddy.AIsetting.ChanceTalk);
             else timer.UpdateTimerInterval(name, delay, chance);
 
             if (canTalk(lastDialogue, timer)) PlayDialogue(MW, timer);
@@ -85,7 +86,7 @@ namespace VPet.Plugin.LolisBuddy.Core
 
             List<DialogueEntry> filteredDialogues = new List<DialogueEntry>();
 
-            AIManager.Instance.updateMemory();
+            AIManager.Instance.updateMemory("speech");
 
             // short term memory
             if (timer.name == "speech")
@@ -97,19 +98,17 @@ namespace VPet.Plugin.LolisBuddy.Core
                 ).ToList();
                 if (filteredDialogues.Count == 0) { return; }
                 dialogue = filteredDialogues[random.Next(filteredDialogues.Count)];
-
-                List<DialogueEntry> allreplies = AIManager.ShortSpeechMemory;
-                allreplies.Add(dialogue);
-                IOManager.SaveLPS(allreplies, FolderPath.Get("memory", "speech", "short_term"), null, true, true);
+                
             }
             // long term memory
             if (timer.name == "AIspeech")
             {
                 dialogue = LanguageManager.GenerateSentence(mood, WindowManager.window.Category.ToString());
-                List<DialogueEntry> allreplies = AIManager.SpeechMemory;
-                allreplies.Add(dialogue);
-                IOManager.SaveLPS(allreplies, FolderPath.Get("memory", "speech", "long_term"), null, true, true);
+                AIManager.SpeechMemory.Add(dialogue);
+                AIManager.ShortSpeechMemory.Add(dialogue);
             }
+
+            AIManager.Instance.saveMemory("speech");
 
             if (dialogue.Dialogue.Length > 0) lastDialogue = 0;
         }

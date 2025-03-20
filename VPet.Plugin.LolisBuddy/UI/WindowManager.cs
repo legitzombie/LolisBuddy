@@ -5,8 +5,10 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Windows;
 using LinePutScript;
 using LinePutScript.Converter;
+using VPet.Plugin.LolisBuddy.Core;
 using VPet.Plugin.LolisBuddy.Sys;
 using VPet.Plugin.LolisBuddy.Utilities;
 
@@ -24,48 +26,7 @@ namespace VPet.Plugin.LolisBuddy.UI
         [DllImport("user32.dll")]
         private static extern int GetWindowText(nint hWnd, StringBuilder text, int count); // Get window title
 
-        public static List<ActiveWindow> windows = new List<ActiveWindow>(); // Store window history
-        public static ActiveWindow window { get; private set; } = new ActiveWindow(); // Ensure it's initialized
-
-        public WindowManager()
-        {
-            windows = IOManager.LoadLPS<ActiveWindow>(FolderPath.Get("memory", "actions", "long_term"), null, true, true);
-        }
-
-        public static void CategorizeBehavior()
-        {
-            List<WindowEntry> behavior = new List<WindowEntry>();
-
-            // Dictionary to track unique categories and their total runtime
-            Dictionary<string, int> categoryRuntimeMap = new Dictionary<string, int>();
-
-            foreach (var window in windows)
-            {
-                string category = window.Category;
-                if (category == "Uncategorized") continue;
-                if (Websites.Categories.ContainsKey(category)) category = window.Title;
-                if (categoryRuntimeMap.ContainsKey(category))
-                {
-                    categoryRuntimeMap[category] += window.Runtime;
-                }
-                else
-                {
-                    categoryRuntimeMap[category] = window.Runtime;
-                }
-            }
-
-            // Convert dictionary to a sorted list of UserBehavior objects (descending by runtime)
-            behavior = categoryRuntimeMap
-                .OrderByDescending(entry => entry.Value)
-                .Select(entry => new WindowEntry
-                {
-                    Category = entry.Key,
-                    Runtime = entry.Value
-                })
-                .ToList();
-
-            IOManager.SaveLPS(behavior, FolderPath.Get("memory", "behavior"), "preferences", true);
-        }
+        public static WindowEntry window = new WindowEntry();
 
 
 
@@ -76,15 +37,14 @@ namespace VPet.Plugin.LolisBuddy.UI
         {
             nint hWnd = GetForegroundWindow(); // Get active window handle
 
-            if (hWnd == nint.Zero)
-            {
-                return;
-            }
+            if (hWnd == nint.Zero) return;
 
             GetWindowThreadProcessId(hWnd, out int processId);
 
+            
             try
             {
+
                 Process proc = Process.GetProcessById(processId);
 
                 // Extract details
@@ -95,54 +55,85 @@ namespace VPet.Plugin.LolisBuddy.UI
                 string category = info[0];
                 windowTitle = info[1];
 
-                // Update window details
+                if (ProcessesManager.IsBlacklisted(processName)) return;
+
+                // Update current window details
                 window.Title = windowTitle;
                 window.Category = category;
                 window.Date = date;
                 window.Process = processName;
-                window.Runtime += 2000; // Increment by 1 minute for categorized websites
+                window.Runtime += 1000; // Increment runtime
+
+                bool isWebsite = Websites.Categories.ContainsKey(category);
+
+                // Find index of existing entry
+                int existingIndex = AIManager.ProgramMemory.FindIndex(w => isWebsite ? w.Category == category : w.Process == processName);
+                int shortExistingIndex = AIManager.ShortProgramMemory.FindIndex(w => isWebsite ? w.Category == category : w.Process == processName);
 
 
-                // Find an existing window entry
-                ActiveWindow existingWindow = Websites.Categories.ContainsKey(category)
-                    ? windows.Find(w => w.Category == category) // Match by category for websites
-                    : windows.Find(w => w.Process == processName && w.Title == windowTitle); // Match process & title for apps
-
-                if (existingWindow != null)
+                if (existingIndex != -1)
                 {
-                    existingWindow.Date = date;
-                    existingWindow.Runtime += 2000; // Increment runtime for categorized websites
-
+                    // Update runtime and date in the actual list
+                    AIManager.ProgramMemory[existingIndex].Date = date;
+                    AIManager.ProgramMemory[existingIndex].Runtime += 1000;
                 }
                 else
                 {
-                    int run = 0;
-
-                    windows.Add(new ActiveWindow
+                    // Add new entry if no match found
+                    AIManager.ProgramMemory.Add(new WindowEntry
                     {
                         Process = processName,
                         Title = windowTitle,
-                        Runtime = run,
+                        Runtime = 1000,
                         Date = date,
                         Category = category
                     });
-
-                    // Remove duplicate entries (keeping the first occurrence)
-                    windows = windows.GroupBy(w => new { w.Process, w.Title })
-                                     .Select(g => g.First())
-                                     .ToList();
                 }
 
-                // Save the updated list
-                IOManager.SaveLPS(windows, FolderPath.Get("memory", "actions", "long_term"), null, true);
-                IOManager.SaveLPS(windows, FolderPath.Get("memory", "actions", "short_term"), null, true);
-                CategorizeBehavior();
+
+                if (shortExistingIndex != -1)
+                {
+                    AIManager.ShortProgramMemory[shortExistingIndex].Date = date;
+                    AIManager.ShortProgramMemory[shortExistingIndex].Runtime += 1000;
+                }
+                else
+                {
+                    AIManager.ShortProgramMemory.Add(new WindowEntry
+                    {
+                        Process = processName,
+                        Title = windowTitle,
+                        Runtime = 1000,
+                        Date = date,
+                        Category = category
+                    });
+                }
+
+                // Save updated memory
+                AIManager.Instance.saveMemory("actions");
             }
             catch (IOException)
             {
-
+                
             }
         }
+
+        public static List<WindowEntry> RemoveDuplicates(List<WindowEntry> memory)
+        {
+            return memory
+                .GroupBy(w => Websites.Categories.ContainsKey(w.Category) ? w.Category : w.Process) // Group by category for websites, process for programs
+                .Select(g => new WindowEntry
+                {
+                    Process = g.First().Process,
+                    Title = g.First().Title,
+                    Category = g.First().Category,
+                    Runtime = g.Sum(w => w.Runtime),  // Sum runtime across duplicates
+                    Date = g.Max(w => DateTime.Parse(w.Date)).ToString() // Keep the latest date
+                })
+                .ToList();
+        }
+
+
+
 
         /// <summary>
         /// Gets the window title of the given window handle.
@@ -155,7 +146,7 @@ namespace VPet.Plugin.LolisBuddy.UI
         }
     }
 
-    public class ActiveWindow
+    public class WindowEntry
     {
         [Line] public string Title { get; set; }
         [Line] public string Process { get; set; }
@@ -164,9 +155,4 @@ namespace VPet.Plugin.LolisBuddy.UI
         [Line] public string Category { get; set; }
     }
 
-    public class WindowEntry
-    {
-        [Line] public string Category { get; set; }
-        [Line] public int Runtime { get; set; }
-    }
 }
