@@ -1,6 +1,4 @@
 ﻿using System.ComponentModel;
-using System.IO;
-using System.Reflection;
 using LinePutScript;
 using LinePutScript.Converter;
 using VPet.Plugin.LolisBuddy.Sys;
@@ -69,8 +67,9 @@ namespace VPet.Plugin.LolisBuddy.Config
             if (Name == "speech")
             {
                 loadedSettings = IOManager.LoadLPS<Setting>(FolderPath.Get(), "config")[0];
-                
-            }else if (Name == "AIspeech")
+
+            }
+            else if (Name == "AIspeech")
             {
                 loadedSettings = IOManager.LoadLPS<Setting>(FolderPath.Get(), "AIconfig")[0];
             }
@@ -90,7 +89,7 @@ namespace VPet.Plugin.LolisBuddy.Config
                 IOManager.SaveLPS(LolisBuddy.AIsetting, FolderPath.Get(), "AIconfig", false, false);
                 LolisBuddy.AIsetting.Load();
             }
-            
+
         }
         private void Set(Setting loadedSettings)
         {
