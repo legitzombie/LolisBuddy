@@ -21,9 +21,6 @@ namespace VPet.Plugin.LolisBuddy
         public static Setting setting = new Setting();
         public static Setting AIsetting = new Setting();
 
-        private DialogueManager shortTermDialogueManager = new DialogueManager(FolderPath.Get("text"));
-        private DialogueManager longTermDialogueManager = new DialogueManager();
-
         public LolisBuddy(IMainWindow mainwin) : base(mainwin) { }
 
         public override void LoadPlugin()
@@ -43,10 +40,10 @@ namespace VPet.Plugin.LolisBuddy
         private void InitializeTimers()
         {
             GameTalkTimer.AddOrUpdateTimer(() =>
-                shortTermDialogueManager.HandleDialogue(MW, GameTalkTimer));
+                DialogueManager.HandleDialogue(MW, GameTalkTimer));
 
             AITalkTimer.AddOrUpdateTimer(() =>
-                 longTermDialogueManager.HandleDialogue(MW, AITalkTimer));
+                 DialogueManager.HandleDialogue(MW, AITalkTimer));
 
             windowTimer.AddOrUpdateTimer(() => WindowManager.UpdateActiveWindowDetails());
 
