@@ -14,7 +14,7 @@
 
 - ✅ Store "favorite" and "least favorite" things over time
 
-- ✅ Store food, touch and feeding data
+- ✅ Store food, touch and action data
 
 ### Personality Shifts Over Time
 
