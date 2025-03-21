@@ -26,7 +26,6 @@ namespace VPet.Plugin.LolisBuddy
         public override void LoadPlugin()
         {
             AIsetting.Name = "AIspeech";
-
             setting.Load();
             AIsetting.Load();
 

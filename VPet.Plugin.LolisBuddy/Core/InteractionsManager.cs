@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
 using LinePutScript.Converter;
 using LinePutScript.Localization.WPF;
 using VPet.Plugin.LolisBuddy.Utilities;
@@ -36,10 +39,9 @@ namespace VPet.Plugin.LolisBuddy.Core
         {
             if (item == null) return;
 
-            var memoryList = GetMemoryList<T>();
+            var memoryDictionary = GetMemoryDictionary<T>();
 
-            var existingEntry = memoryList.FirstOrDefault(a => a.Name.Translate() == item.Name.Translate());
-            if (existingEntry != null)
+            if (memoryDictionary.TryGetValue(item.Name, out var existingEntry))
             {
                 IncrementCount(existingEntry);
             }
@@ -69,16 +71,20 @@ namespace VPet.Plugin.LolisBuddy.Core
 
 
 
-        private static List<IMemoryEntry> GetMemoryList<T>() where T : IMemoryEntry
+        private static Dictionary<string, IMemoryEntry> GetMemoryDictionary<T>() where T : IMemoryEntry
         {
             return typeof(T) switch
             {
-                Type t when t == typeof(ItemEntry) => AIManager.ItemMemory.Cast<IMemoryEntry>().ToList(),
-                Type t when t == typeof(TouchEntry) => AIManager.TouchMemory.Cast<IMemoryEntry>().ToList(),
-                Type t when t == typeof(ActionEntry) => AIManager.ActionMemory.Cast<IMemoryEntry>().ToList(),
+                Type t when t == typeof(ItemEntry) => AIManager.ItemMemory
+                    .ToDictionary(item => item.Name, item => (IMemoryEntry)item),
+                Type t when t == typeof(TouchEntry) => AIManager.TouchMemory
+                    .ToDictionary(item => item.Name, item => (IMemoryEntry)item),
+                Type t when t == typeof(ActionEntry) => AIManager.ActionMemory
+                    .ToDictionary(item => item.Name, item => (IMemoryEntry)item),
                 _ => throw new NotSupportedException($"Type {typeof(T).Name} is not supported.")
             };
         }
+
 
 
 
@@ -87,13 +93,16 @@ namespace VPet.Plugin.LolisBuddy.Core
             switch (entry)
             {
                 case ItemEntry itemEntry:
-                    AIManager.ItemMemory.First(a => a.Name.Translate() == itemEntry.Name.Translate()).Eaten += 1;
+                    var item = AIManager.ItemMemory.First(a => a.Name == itemEntry.Name);
+                    item.Eaten += 1;
                     break;
                 case ActionEntry actionEntry:
-                    AIManager.ActionMemory.First(a => a.Name.Translate() == actionEntry.Name.Translate()).Interactions += 1;
+                    var action = AIManager.ActionMemory.First(a => a.Name == actionEntry.Name);
+                    action.Interactions += 1;
                     break;
                 case TouchEntry touchEntry:
-                    AIManager.TouchMemory.First(a => a.Name.Translate() == touchEntry.Name.Translate()).Touches += 1;
+                    var touch = AIManager.TouchMemory.First(a => a.Name == touchEntry.Name);
+                    touch.Touches += 1;
                     break;
             }
         }

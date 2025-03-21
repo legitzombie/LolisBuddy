@@ -51,8 +51,8 @@ namespace VPet.Plugin.LolisBuddy.Core
 {
     { "programspreferences", (AIManager.ProgramMemory?.Select(p => (p.Title, MathF.Log(p.Runtime / 600000f + 1))).ToList() ?? new List<(string, float)>(), AIManager.ProgramPreferences) },
     { "itemspreferences", (AIManager.ItemMemory?.Select(i => (i.Name, (float)i.Eaten)).ToList() ?? new List<(string, float)>(), AIManager.ItemPreferences) },
-    { "actionspreferences", (AIManager.ActionMemory?.Select(a => (a.Name, (float)a.Interactions)).ToList() ?? new List<(string, float)>(), AIManager.ActionPreferences) }, // ✅ Fixed here
-    { "touchpreferences", (AIManager.TouchMemory?.Select(t => (t.Name, (float)t.Touches)).ToList() ?? new List<(string, float)>(), AIManager.TouchPreferences) }  // ✅ Fixed here
+    { "actionspreferences", (AIManager.ActionMemory?.Select(a => (a.Name, (float)a.Interactions)).ToList() ?? new List<(string, float)>(), AIManager.ActionPreferences) }, 
+    { "touchpreferences", (AIManager.TouchMemory?.Select(t => (t.Name, (float)t.Touches)).ToList() ?? new List<(string, float)>(), AIManager.TouchPreferences) }  
 };
 
 
