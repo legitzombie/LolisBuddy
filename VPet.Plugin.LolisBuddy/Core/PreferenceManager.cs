@@ -27,10 +27,10 @@ namespace VPet.Plugin.LolisBuddy.Core
         private List<PreferenceEntry> preferences = new List<PreferenceEntry>();
         private Dictionary<string, int> interactionHistory = new Dictionary<string, int>();
 
-        private const float LearningRate = 0.005f;
-        private const float BaseDecayRate = 0.00001f; // Slower decay
-        private const float OverindulgencePenalty = 0.002f; // More boredom effect
-        private const float CravingBoost = 0.03f; // Stronger craving effect
+        private float LearningRate = (LolisBuddy.AIsetting.LearningRate / 1000000f);
+        private float BaseDecayRate = (LolisBuddy.AIsetting.BaseDecayRate / 1000000f);
+        private float OverindulgencePenalty = (LolisBuddy.AIsetting.OverindulgencePenalty / 1000000f);
+        private float CravingBoost = (LolisBuddy.AIsetting.CravingBoost / 1000000f);
         private const int VarietyThreshold = 14;
 
         public enum Personality { Stable, Curious, Addictive, Balanced }
@@ -45,8 +45,6 @@ namespace VPet.Plugin.LolisBuddy.Core
 
         public void Update()
         {
-            // Dictionary linking each category to its corresponding data and preference list
-            // Dictionary linking each category to its corresponding data and preference list
             var categorizedEntries = new Dictionary<string, (List<(string Name, float Usage)> Entries, List<PreferenceEntry> Preferences)>()
 {
     { "programspreferences", (AIManager.ProgramMemory?.Select(p => (p.Title, MathF.Log(p.Runtime / 600000f + 1))).ToList() ?? new List<(string, float)>(), AIManager.ProgramPreferences) },

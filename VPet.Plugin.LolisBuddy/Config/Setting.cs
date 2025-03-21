@@ -62,33 +62,16 @@ namespace VPet.Plugin.LolisBuddy.Config
         /// </summary>
         public void Load()
         {
-            Setting loadedSettings = new Setting();
-
-            if (Name == "speech")
-            {
-                loadedSettings = IOManager.LoadLPS<Setting>(FolderPath.Get(), "config")[0];
-
-            }
-            else if (Name == "AIspeech")
-            {
-                loadedSettings = IOManager.LoadLPS<Setting>(FolderPath.Get(), "AIconfig")[0];
-            }
-
+            Setting loadedSettings = IOManager.LoadLPS<Setting>(FolderPath.Get(), "config")[0];
             Set(loadedSettings);
         }
 
         public void Save()
         {
-            if (Name == "speech")
-            {
-                IOManager.SaveLPS(LolisBuddy.setting, FolderPath.Get(), "config", false, false);
-                LolisBuddy.setting.Load();
-            }
-            else if (Name == "AIspeech")
-            {
-                IOManager.SaveLPS(LolisBuddy.AIsetting, FolderPath.Get(), "AIconfig", false, false);
-                LolisBuddy.AIsetting.Load();
-            }
+
+            IOManager.SaveLPS(LolisBuddy.setting, FolderPath.Get(), "config", false, false);
+            LolisBuddy.setting.Load();
+
 
         }
         private void Set(Setting loadedSettings)

@@ -9,7 +9,7 @@ namespace VPet.Plugin.LolisBuddy
     public partial class winSetting : Window
     {
         public Setting UserSettings { get; set; }
-        public Setting LolisBuddySettings { get; set; }
+        public AISetting LolisBuddySettings { get; set; }
 
         public winSetting()
         {
@@ -24,6 +24,7 @@ namespace VPet.Plugin.LolisBuddy
 
             GameTab.DataContext = UserSettings;
             LolisBuddyTab.DataContext = LolisBuddySettings;
+            LearningTab.DataContext = LolisBuddySettings;
         }
 
         private void SaveButton_Click(object sender, RoutedEventArgs e)

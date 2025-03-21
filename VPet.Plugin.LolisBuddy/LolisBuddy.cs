@@ -13,19 +13,19 @@ namespace VPet.Plugin.LolisBuddy
     {
         private TimerManager GameTalkTimer;
         private TimerManager AITalkTimer;
+        private TimerManager PersonalityTimer;
 
-        private TimerManager personalityTimer = new TimerManager("AIpersonality", 6000, 100);
         private readonly TimerManager idleTimer = new TimerManager("idle", 10000, 100);
         private readonly TimerManager windowTimer = new TimerManager("activewindowupdater", 1000, 100);
 
         public static Setting setting = new Setting();
-        public static Setting AIsetting = new Setting();
+        public static AISetting AIsetting = new AISetting();
 
         public LolisBuddy(IMainWindow mainwin) : base(mainwin) { }
 
         public override void LoadPlugin()
         {
-            AIsetting.Name = "AIspeech";
+
             setting.Load();
             AIsetting.Load();
 
@@ -34,6 +34,7 @@ namespace VPet.Plugin.LolisBuddy
             AIManager.Instance.updateMemory();
             GameTalkTimer = new TimerManager(setting.Name, setting.DelayTimer, setting.ChanceTalk);
             AITalkTimer = new TimerManager(AIsetting.Name, AIsetting.DelayTimer, AIsetting.ChanceTalk);
+            PersonalityTimer = new TimerManager("AIpersonality", AIsetting.LearningSpeed * 6000, 100);
             InitializeTimers();
             AddSettingsMenu();
         }
@@ -50,7 +51,7 @@ namespace VPet.Plugin.LolisBuddy
 
             idleTimer.AddOrUpdateTimer(() => SleepTracker.CheckUserActivity(MW));
 
-            personalityTimer.AddOrUpdateTimer(() => PreferenceManager.Instance.Update());
+            PersonalityTimer.AddOrUpdateTimer(() => PreferenceManager.Instance.Update());
         }
 
         private void AddSettingsMenu()

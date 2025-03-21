@@ -48,12 +48,12 @@
 
 
                 <!-- Interval -->
-                <TextBlock Foreground="{DynamicResource DARKPrimary}" Text="Interval:" Grid.Row="0" />
+                <TextBlock Foreground="{DynamicResource DARKPrimary}" Text="Interval:" Grid.Row="0" ToolTip="1000 = 1 second"/>
                 <TextBox Style="{StaticResource StandardTextBoxStyle}" Text="{Binding DelayTimer, UpdateSourceTrigger=PropertyChanged}" 
                              Grid.Row="0" HorizontalAlignment="Right" Width="120" Margin="0,0,50,0"/>
 
                 <!-- Speech Delay -->
-                <TextBlock Foreground="{DynamicResource DARKPrimary}" Text="Speech Delay:" Grid.Row="2"/>
+                <TextBlock Foreground="{DynamicResource DARKPrimary}" Text="Speech Delay:" Grid.Row="2" ToolTip="1000 = 1 second"/>
                 <TextBox Style="{StaticResource StandardTextBoxStyle}" Text="{Binding DelayTalk, UpdateSourceTrigger=PropertyChanged}" 
                              Grid.Row="2" HorizontalAlignment="Right" Width="120" Margin="0,0,50,0"/>
 
@@ -91,6 +91,7 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="10"/>
                     <RowDefinition Height="Auto"/>
+          
 
                 </Grid.RowDefinitions>
 
@@ -99,12 +100,12 @@
 
 
                 <!-- Interval -->
-                <TextBlock Foreground="{DynamicResource DARKPrimary}" Text="Interval:" Grid.Row="0" />
+                <TextBlock Foreground="{DynamicResource DARKPrimary}" Text="Interval:" Grid.Row="0" ToolTip="1000 = 1 second"/>
                 <TextBox Style="{StaticResource StandardTextBoxStyle}" Text="{Binding DelayTimer, UpdateSourceTrigger=PropertyChanged}" 
                              Grid.Row="0" HorizontalAlignment="Right" Width="120" Margin="0,0,50,0"/>
 
                 <!-- Speech Delay -->
-                <TextBlock Foreground="{DynamicResource DARKPrimary}" Text="Speech Delay:" Grid.Row="2"/>
+                <TextBlock Foreground="{DynamicResource DARKPrimary}" Text="Speech Delay:" Grid.Row="2" ToolTip="1000 = 1 second"/>
                 <TextBox Style="{StaticResource StandardTextBoxStyle}" Text="{Binding DelayTalk, UpdateSourceTrigger=PropertyChanged}" 
                              Grid.Row="2" HorizontalAlignment="Right" Width="120" Margin="0,0,50,0"/>
 
@@ -123,7 +124,71 @@
             </Grid>
             
         </TabItem>
-        
+
+        <TabItem Header="Learning" x:Name="LearningTab">
+            <Grid Margin="10">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="Auto"/>
+
+                </Grid.RowDefinitions>
+
+
+
+                <TextBlock  Foreground="{DynamicResource DARKPrimary}" Text="Learning Speed:" Grid.Row="0" ToolTip="1 tick = 6 seconds"/>
+                <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Slider Style="{StaticResource StandardSliderStyle}" Minimum="1" Maximum="400" Width="120" Margin="0,0,0,0"
+                               Value="{Binding LearningSpeed, UpdateSourceTrigger=PropertyChanged}" SmallChange="1"/>
+                    <TextBlock Foreground="{DynamicResource DARKPrimary}" Text="{Binding LearningSpeed}" Width="50" TextAlignment="Center"/>
+                </StackPanel>
+
+                <TextBlock  Foreground="{DynamicResource DARKPrimary}" Text="Learning Rate:" Grid.Row="2" ToolTip="1 tick = 0.0001%"/>
+                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Slider Style="{StaticResource StandardSliderStyle}" Minimum="0" Maximum="10000" Width="120" Margin="0,0,0,0"
+                                Value="{Binding LearningRate, UpdateSourceTrigger=PropertyChanged}" SmallChange="1"/>
+                    <TextBlock Foreground="{DynamicResource DARKPrimary}" Text="{Binding LearningRate}" Width="50" TextAlignment="Center"/>
+                </StackPanel>
+
+                <TextBlock  Foreground="{DynamicResource DARKPrimary}" Text="Decay Rate:" Grid.Row="4" ToolTip="1 tick = 0.0001%" />
+                <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Slider Style="{StaticResource StandardSliderStyle}" Minimum="0" Maximum="10000" Width="120" Margin="0,0,0,0"
+                     Value="{Binding BaseDecayRate, UpdateSourceTrigger=PropertyChanged}" SmallChange="1"/>
+                    <TextBlock Foreground="{DynamicResource DARKPrimary}" Text="{Binding BaseDecayRate}" Width="50" TextAlignment="Center"/>
+                </StackPanel>
+
+                <TextBlock  Foreground="{DynamicResource DARKPrimary}" Text="Overindulgence Penalty:" Grid.Row="6" ToolTip="1 tick = 0.0001%"/>
+                <StackPanel Grid.Row="6" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Slider Style="{StaticResource StandardSliderStyle}" Minimum="0" Maximum="10000" Width="120" Margin="0,0,0,0"
+                     Value="{Binding OverindulgencePenalty, UpdateSourceTrigger=PropertyChanged}" SmallChange="1"/>
+                    <TextBlock Foreground="{DynamicResource DARKPrimary}" Text="{Binding OverindulgencePenalty}" Width="50" TextAlignment="Center"/>
+                </StackPanel>
+
+                <TextBlock  Foreground="{DynamicResource DARKPrimary}" Text="Craving Boost:" Grid.Row="8" ToolTip="1 tick = 0.0001%"/>
+                <StackPanel Grid.Row="8" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Slider Style="{StaticResource StandardSliderStyle}" Minimum="0" Maximum="10000" Width="120" Margin="0,0,0,0"
+                     Value="{Binding CravingBoost, UpdateSourceTrigger=PropertyChanged}" SmallChange="1"/>
+                    <TextBlock Foreground="{DynamicResource DARKPrimary}" Text="{Binding CravingBoost}" Width="50" TextAlignment="Center"/>
+                </StackPanel>
+
+
+                <!-- Save Button -->
+                <Button Style="{StaticResource ThemedButtonStyle}" Content="Save Settings" Grid.Row="10" HorizontalAlignment="Center"
+                Click="SaveButton_Click" Margin="0,0,0,40" Grid.RowSpan="2" />
+            </Grid>
+        </TabItem>
+
+
+
     </TabControl>
     
 </Window>
