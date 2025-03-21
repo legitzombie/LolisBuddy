@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using LinePutScript.Converter;
 using VPet.Plugin.LolisBuddy.Core;
-using VPet.Plugin.LolisBuddy.Sys;
 using VPet_Simulator.Windows.Interface;
 
 namespace VPet.Plugin.LolisBuddy.Utilities
@@ -30,7 +28,7 @@ namespace VPet.Plugin.LolisBuddy.Utilities
 
         public static void CheckUserActivity(IMainWindow MW)
         {
-           
+
             int idleTimeMinutes = GetIdleTime() / 60000;
 
             if (idleTimeMinutes >= InactivityThresholdMinutes)

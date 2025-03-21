@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Windows;
 using VPet.Plugin.LolisBuddy.Sys;
 using VPet.Plugin.LolisBuddy.UI;
 using VPet.Plugin.LolisBuddy.Utilities;
@@ -43,7 +42,7 @@ namespace VPet.Plugin.LolisBuddy.Core
 
         public void updateMemory(string category = null)
         {
-            switch(category)
+            switch (category)
             {
                 case "speech":
                     loadSpeech();
@@ -123,7 +122,7 @@ namespace VPet.Plugin.LolisBuddy.Core
         private void loadPreferences()
         {
             ProgramPreferences = IOManager.LoadLPS<PreferenceEntry>(FolderPath.Get("memory", "personality", "preferences"), "apps", false);
-         
+
         }
 
         private void loadSleep()

@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Windows;
 using LinePutScript;
 using LinePutScript.Converter;
 using VPet.Plugin.LolisBuddy.Core;
@@ -41,7 +40,7 @@ namespace VPet.Plugin.LolisBuddy.UI
 
             GetWindowThreadProcessId(hWnd, out int processId);
 
-            
+
             try
             {
 
@@ -113,7 +112,7 @@ namespace VPet.Plugin.LolisBuddy.UI
             }
             catch (IOException)
             {
-                
+
             }
         }
 

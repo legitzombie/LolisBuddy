@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VPet.Plugin.LolisBuddy.Sys;
-using VPet.Plugin.LolisBuddy.Utilities;
-
-namespace VPet.Plugin.LolisBuddy.UI
+﻿namespace VPet.Plugin.LolisBuddy.UI
 {
     public static class UIManager
     {

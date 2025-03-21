@@ -59,7 +59,8 @@ namespace VPet.Plugin.LolisBuddy.Core
         {
             AnimationManager.Instance.updateAnimation(MW);
             if (LolisBuddy.setting.Debug) Talk(MW, AnimationManager.Instance.debugMessage());
-            else { 
+            else
+            {
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
                 {
                     GetRandomDialogue(MW, timer);
@@ -90,7 +91,7 @@ namespace VPet.Plugin.LolisBuddy.Core
         /// </summary>
         public static void GetRandomDialogue(IMainWindow MW, TimerManager timer)
         {
-            
+
             var type = AnimationManager.Instance.animation.Type.ToString();
             var name = AnimationManager.Instance.animation.Name.ToString();
             var mood = AnimationManager.Instance.animation.ModeType.ToString();
@@ -109,7 +110,7 @@ namespace VPet.Plugin.LolisBuddy.Core
                 ).ToList();
                 if (filteredDialogues.Count == 0) { return; }
                 dialogue = filteredDialogues[random.Next(filteredDialogues.Count)];
-                
+
             }
             // long term memory
             if (timer.name == "AIspeech")

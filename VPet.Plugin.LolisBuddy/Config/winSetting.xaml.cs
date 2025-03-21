@@ -1,6 +1,5 @@
 ﻿using System.Windows;
 using VPet.Plugin.LolisBuddy.Config;
-using VPet.Plugin.LolisBuddy.UI;
 
 namespace VPet.Plugin.LolisBuddy
 {
@@ -17,10 +16,10 @@ namespace VPet.Plugin.LolisBuddy
             InitializeComponent();
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
-            UserSettings = LolisBuddy.setting; 
+            UserSettings = LolisBuddy.setting;
             LolisBuddySettings = LolisBuddy.AIsetting;
 
-            UserSettings.Load(); 
+            UserSettings.Load();
             LolisBuddySettings.Load();
 
             GameTab.DataContext = UserSettings;

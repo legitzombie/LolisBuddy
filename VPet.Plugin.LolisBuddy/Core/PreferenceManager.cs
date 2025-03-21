@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows;
 using LinePutScript.Converter;
-using VPet.Plugin.LolisBuddy.Sys;
 using VPet.Plugin.LolisBuddy.UI;
 using VPet.Plugin.LolisBuddy.Utilities;
 
