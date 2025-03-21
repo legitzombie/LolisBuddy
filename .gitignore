@@ -61,3 +61,5 @@
 /VPet.Plugin.LolisBuddy/bin/Release/net8.0-windows/VPet.Plugin.LolisBuddy.pdb
 /.vs/VPet.Plugin/v17
 /.vs/VPet.Plugin/FileContentIndex
+/.vs/VPet.Plugin/DesignTimeBuild
+/VPet.Plugin.LolisBuddy/obj/Release/net8.0-windows
