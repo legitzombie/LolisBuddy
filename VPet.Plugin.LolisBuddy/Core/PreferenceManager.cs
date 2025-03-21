@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using LinePutScript.Converter;
-using VPet.Plugin.LolisBuddy.UI;
-using VPet.Plugin.LolisBuddy.Utilities;
 
 namespace VPet.Plugin.LolisBuddy.Core
 {
@@ -47,80 +45,71 @@ namespace VPet.Plugin.LolisBuddy.Core
 
         public void Update()
         {
-            List<WindowEntry> programs = AIManager.ProgramMemory;
-            List<FoodEntry> food = AIManager.FoodMemory;
-            List<ActionEntry> actions = AIManager.ActionMemory;
+            // Dictionary linking each category to its corresponding data and preference list
+            // Dictionary linking each category to its corresponding data and preference list
+            var categorizedEntries = new Dictionary<string, (List<(string Name, float Usage)> Entries, List<PreferenceEntry> Preferences)>()
+{
+    { "programspreferences", (AIManager.ProgramMemory?.Select(p => (p.Title, MathF.Log(p.Runtime / 600000f + 1))).ToList() ?? new List<(string, float)>(), AIManager.ProgramPreferences) },
+    { "itemspreferences", (AIManager.ItemMemory?.Select(i => (i.Name, (float)i.Eaten)).ToList() ?? new List<(string, float)>(), AIManager.ItemPreferences) },
+    { "actionspreferences", (AIManager.ActionMemory?.Select(a => (a.Name, (float)a.Interactions)).ToList() ?? new List<(string, float)>(), AIManager.ActionPreferences) }, // ✅ Fixed here
+    { "touchpreferences", (AIManager.TouchMemory?.Select(t => (t.Name, (float)t.Touches)).ToList() ?? new List<(string, float)>(), AIManager.TouchPreferences) }  // ✅ Fixed here
+};
 
-            var allEntries = new List<(string Name, float Usage)>();
 
-            if (programs != null)
+            foreach (var (category, (entries, preferences)) in categorizedEntries)
             {
-                allEntries.AddRange(programs.Select(item => (item.Title, MathF.Log(item.Runtime / 600000f + 1))));
-                Category = "Apps";
-            }
-            if (food != null)
-            {
-                allEntries.AddRange(food.Select(meal => (meal.Name, (float)meal.Eaten)));
-                Category = "Food";
-            }
-            if (actions != null)
-            {
-                allEntries.AddRange(actions.Select(action => (action.Name, (float)action.Interactions)));
-                Category = "Action";
-            }
+                if (!entries.Any()) continue; // Skip empty categories
 
-            float globalAvgUsage = allEntries.Any() ? allEntries.Average(e => e.Usage) : 0f;
+                Category = category; // Assign category dynamically
 
-            foreach (var (name, usage) in allEntries)
-            {
-                bool overused = usage > (globalAvgUsage * 1.5f); // Was heavily used
-                bool underused = usage < (globalAvgUsage * 0.5f); // Was ignored
+                float globalAvgUsage = entries.Average(e => e.Usage);
 
-                UpdatePreference(name, overused, underused);
-            }
+                foreach (var (name, usage) in entries)
+                {
+                    bool overused = usage > (globalAvgUsage * 1.5f);
+                    bool underused = usage < (globalAvgUsage * 0.5f);
 
-            DecayPreferences();
+                    UpdatePreferenceList(preferences, name, overused, underused);
+                }
 
-            if (preferences.Any())
-            {
-                if (programs != null) AIManager.ProgramPreferences = preferences;
-
-                AIManager.Instance.saveMemory("preferences");
+                DecayPreferences(preferences);
+                AIManager.Instance.saveMemory(category); // Save using category directly
             }
         }
 
-        public void UpdatePreference(string item, bool overused, bool underused)
+
+        private void UpdatePreferenceList(List<PreferenceEntry> preferences, string name, bool overused, bool underused)
         {
             float moodMultiplier = GetMoodMultiplier();
-            float tolerance = GetPersonalityTolerance();
+            float cravingBoost = CravingBoost * moodMultiplier;
 
-            var entry = preferences.Find(p => p.Name == item);
+            var entry = preferences.FirstOrDefault(p => p.Name == name);
             if (entry == null)
             {
                 preferences.Add(new PreferenceEntry
                 {
-                    Name = item,
+                    Name = name,
                     Likeability = underused ? 0.3f * moodMultiplier : -0.3f * moodMultiplier
                 });
-                interactionHistory[item] = 1;
+                interactionHistory[name] = 1;
             }
             else
             {
                 if (overused)
                 {
-                    entry.Likeability -= OverindulgencePenalty; // AI gets bored
-                    Console.WriteLine($"AI is getting bored of {item}.");
+                    entry.Likeability -= OverindulgencePenalty;
+                    Console.WriteLine($"AI is getting bored of {name}.");
                 }
                 else if (underused)
                 {
-                    entry.Likeability += CravingBoost * 2;
+                    entry.Likeability += cravingBoost;
                 }
 
                 entry.Likeability = Math.Clamp(entry.Likeability, -1.0f, 1.0f);
-                interactionHistory[item]++;
+                interactionHistory[name]++;
             }
 
-            ApplyVarietySeeking(item);
+            ApplyVarietySeeking(preferences, name);
         }
 
         private float GetMoodMultiplier()
@@ -145,7 +134,7 @@ namespace VPet.Plugin.LolisBuddy.Core
             };
         }
 
-        private void ApplyVarietySeeking(string currentItem)
+        private void ApplyVarietySeeking(List<PreferenceEntry> preferences, string currentItem)
         {
             if (interactionHistory[currentItem] >= VarietyThreshold)
             {
@@ -153,26 +142,25 @@ namespace VPet.Plugin.LolisBuddy.Core
                 var entry = preferences.Find(p => p.Name == currentItem);
                 if (entry != null) entry.Likeability -= OverindulgencePenalty / 2;
 
-                string newItem = FindNewPreference();
+                string newItem = FindNewPreference(preferences);
                 if (!string.IsNullOrEmpty(newItem))
                 {
                     var newEntry = preferences.Find(p => p.Name == newItem);
                     if (newEntry != null)
                     {
-                        newEntry.Likeability += LearningRate * 2; // Encourage trying new things
+                        newEntry.Likeability += LearningRate * 2;
                         Console.WriteLine($"AI is now interested in trying {newItem}!");
                     }
                 }
             }
         }
 
-        private string FindNewPreference()
+        private string FindNewPreference(List<PreferenceEntry> preferences)
         {
             var neutralItems = preferences.Where(p => Math.Abs(p.Likeability) < 0.3f).Select(p => p.Name).ToList();
             return neutralItems.Any() ? neutralItems[new Random().Next(neutralItems.Count)] : "";
         }
-
-        public void DecayPreferences()
+        private void DecayPreferences(List<PreferenceEntry> preferences)
         {
             float decayRate = GetMoodDecayMultiplier() * BaseDecayRate;
 
@@ -186,13 +174,13 @@ namespace VPet.Plugin.LolisBuddy.Core
 
                 if (interactionHistory.ContainsKey(entry.Name) && interactionHistory[entry.Name] == 0 && entry.Likeability < 0.3f)
                 {
-                    entry.Likeability += CravingBoost * 3; // AI starts craving ignored things
+                    entry.Likeability += CravingBoost * 3;
                     Console.WriteLine($"AI is craving {entry.Name} after missing it!");
                 }
 
                 if (entry.Likeability <= -0.9f && interactionHistory[entry.Name] > 10)
                 {
-                    entry.Likeability = -0.3f; // Prevents permanent dislike
+                    entry.Likeability = -0.3f;
                 }
 
                 if (entry.Likeability != oldValue)

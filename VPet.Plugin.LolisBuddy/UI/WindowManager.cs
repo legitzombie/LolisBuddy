@@ -108,7 +108,7 @@ namespace VPet.Plugin.LolisBuddy.UI
                 }
 
                 // Save updated memory
-                AIManager.Instance.saveMemory("actions");
+                AIManager.Instance.saveMemory("programs");
             }
             catch (IOException)
             {

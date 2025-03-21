@@ -23,6 +23,9 @@ namespace VPet.Plugin.LolisBuddy.Core
             }
         }
 
+        public static List<ActionEntry> ActionMemory { get; set; } = new List<ActionEntry>();
+        public static List<ActionEntry> ShortActionMemory { get; set; } = new List<ActionEntry>();
+
         public static List<DialogueEntry> SpeechMemory { get; set; } = new List<DialogueEntry>();
         public static List<DialogueEntry> ShortSpeechMemory { get; set; } = new List<DialogueEntry>();
 
@@ -34,11 +37,15 @@ namespace VPet.Plugin.LolisBuddy.Core
         public static List<WindowEntry> ShortProgramMemory { get; set; } = new List<WindowEntry>();
 
         public static List<PreferenceEntry> ProgramPreferences { get; set; } = new List<PreferenceEntry>();
-        public static List<PreferenceEntry> FoodPreferences { get; set; } = new List<PreferenceEntry>();
+        public static List<PreferenceEntry> ItemPreferences { get; set; } = new List<PreferenceEntry>();
         public static List<PreferenceEntry> ActionPreferences { get; set; } = new List<PreferenceEntry>();
+        public static List<PreferenceEntry> TouchPreferences { get; set; } = new List<PreferenceEntry>();
 
-        public static List<FoodEntry> FoodMemory { get; internal set; } = new List<FoodEntry>();
-        public static List<ActionEntry> ActionMemory { get; internal set; } = new List<ActionEntry>();
+        public static List<ItemEntry> ItemMemory { get; set; } = new List<ItemEntry>();
+        public static List<ItemEntry> ShortItemMemory { get; set; } = new List<ItemEntry>();
+
+        public static List<TouchEntry> TouchMemory { get; set; } = new List<TouchEntry>();
+        public static List<TouchEntry> ShortTouchMemory { get; set; } = new List<TouchEntry>();
 
         public void updateMemory(string category = null)
         {
@@ -53,18 +60,42 @@ namespace VPet.Plugin.LolisBuddy.Core
                 case "idle":
                     loadIdle();
                     break;
-                case "actions":
-                    loadActions();
+                case "programs":
+                    loadPrograms();
                     break;
-                case "preferences":
-                    loadPreferences();
+                case "programspreferences":
+                    loadProgramsPreferences();
+                    break;
+                case "itemspreferences":
+                    loadItemsPreferences();
+                    break;
+                case "actionspreferences":
+                    loadActionsPreferences();
+                    break;
+                case "touchpreferences":
+                    loadTouchPreferences();
+                    break;
+                case "interact":
+                    loadInteract();
+                    break;
+                case "items":
+                    loadItems();
+                    break;
+                case "touch":
+                    loadTouch();
                     break;
                 default:
                     loadSpeech();
                     loadSleep();
-                    loadActions();
-                    loadPreferences();
+                    loadPrograms();
                     loadIdle();
+                    loadInteract();
+                    loadItems();
+                    loadTouch();
+                    loadProgramsPreferences();
+                    loadItemsPreferences();
+                    loadActionsPreferences();
+                    loadTouchPreferences();
                     break;
             }
         }
@@ -82,20 +113,68 @@ namespace VPet.Plugin.LolisBuddy.Core
                 case "idle":
                     saveIdle();
                     break;
-                case "actions":
-                    saveActions();
+                case "programs":
+                    savePrograms();
                     break;
-                case "preferences":
-                    savePreferences();
+                case "programspreferences":
+                    saveProgramsPreferences();
+                    break;
+                case "itemspreferences":
+                    saveItemsPreferences();
+                    break;
+                case "actionspreferences":
+                    saveActionsPreferences();
+                    break;
+                case "touchpreferences":
+                    saveTouchPreferences();
+                    break;
+                case "interact":
+                    saveInteract();
+                    break;
+                case "items":
+                    saveItems();
+                    break;
+                case "touch":
+                    saveTouch();
                     break;
                 default:
                     saveSpeech();
                     saveSleep();
-                    saveActions();
-                    savePreferences();
+                    savePrograms();
                     saveIdle();
+                    saveInteract();
+                    saveItems();
+                    saveTouch();
+                    saveProgramsPreferences();
+                    saveItemsPreferences();
+                    saveActionsPreferences();
+                    saveTouchPreferences();
                     break;
             }
+        }
+
+        private void saveTouch()
+        {
+            IOManager.SaveLPS(TouchMemory, FolderPath.Get("memory", "actions", "touch", "long_term"), null, false, false);
+            IOManager.SaveLPS(TouchMemory, FolderPath.Get("memory", "actions", "touch", "short_term"), null, false, false);
+        }
+
+        private void loadTouch()
+        {
+            TouchMemory = IOManager.LoadLPS<TouchEntry>(FolderPath.Get("memory", "actions", "touch", "long_term"), null, false, true);
+            ShortTouchMemory = IOManager.LoadLPS<TouchEntry>(FolderPath.Get("memory", "actions", "touch", "short_term"), null, false, true);
+        }
+
+        private static void loadItems()
+        {
+            ItemMemory = IOManager.LoadLPS<ItemEntry>(FolderPath.Get("memory", "actions", "items", "long_term"), null, false, true);
+            ShortItemMemory = IOManager.LoadLPS<ItemEntry>(FolderPath.Get("memory", "actions", "items", "short_term"), null, false, true);
+        }
+
+        private static void loadInteract()
+        {
+            ActionMemory = IOManager.LoadLPS<ActionEntry>(FolderPath.Get("memory", "actions", "interact", "long_term"), null, false, true);
+            ShortActionMemory = IOManager.LoadLPS<ActionEntry>(FolderPath.Get("memory", "actions", "interact", "short_term"), null, false, true);
         }
 
         private void loadSpeech()
@@ -110,24 +189,29 @@ namespace VPet.Plugin.LolisBuddy.Core
             ShortIdleMemory = IOManager.LoadLPS<IdleEntry>(FolderPath.Get("memory", "behavior", "idle", "short_term"), null, false, true);
         }
 
-        private void loadActions()
+        private void loadPrograms()
         {
-            ProgramMemory = IOManager.LoadLPS<WindowEntry>(FolderPath.Get("memory", "actions", "long_term"), null, false, true);
-            ShortProgramMemory = IOManager.LoadLPS<WindowEntry>(FolderPath.Get("memory", "actions", "short_term"), null, false, true);
+            ProgramMemory = IOManager.LoadLPS<WindowEntry>(FolderPath.Get("memory", "actions", "programs", "long_term"), null, false, true);
+            ShortProgramMemory = IOManager.LoadLPS<WindowEntry>(FolderPath.Get("memory", "actions", "programs", "short_term"), null, false, true);
             ProgramMemory = WindowManager.RemoveDuplicates(ProgramMemory);
             ShortProgramMemory = WindowManager.RemoveDuplicates(ShortProgramMemory);
 
         }
 
-        private void loadPreferences()
-        {
-            ProgramPreferences = IOManager.LoadLPS<PreferenceEntry>(FolderPath.Get("memory", "personality", "preferences"), "apps", false);
-
-        }
+        private void loadProgramsPreferences() => ProgramPreferences = IOManager.LoadLPS<PreferenceEntry>(FolderPath.Get("memory", "personality", "preferences"), "apps", false);
+        private void loadItemsPreferences() => ItemPreferences = IOManager.LoadLPS<PreferenceEntry>(FolderPath.Get("memory", "personality", "preferences"), "items", false);
+        private void loadActionsPreferences() => ActionPreferences = IOManager.LoadLPS<PreferenceEntry>(FolderPath.Get("memory", "personality", "preferences"), "actions", false);
+        private void loadTouchPreferences() => TouchPreferences = IOManager.LoadLPS<PreferenceEntry>(FolderPath.Get("memory", "personality", "preferences"), "touch", false);
 
         private void loadSleep()
         {
             SleepMemory = IOManager.LoadLPS<IdleEntry>(FolderPath.Get("memory", "behavior", "sleep"), "schedule", false, false);
+        }
+
+        private static void saveItems()
+        {
+            IOManager.SaveLPS(ItemMemory, FolderPath.Get("memory", "actions", "items", "long_term"), null, false, false);
+            IOManager.SaveLPS(ShortItemMemory, FolderPath.Get("memory", "actions", "items", "short_term"), null, false, false);
         }
 
         private void saveSleep()
@@ -147,17 +231,23 @@ namespace VPet.Plugin.LolisBuddy.Core
             IOManager.SaveLPS(ShortIdleMemory, FolderPath.Get("memory", "behavior", "idle", "short_term"), null, false, false);
         }
 
-        private void saveActions()
+        private void savePrograms()
         {
             ProgramMemory = WindowManager.RemoveDuplicates(ProgramMemory);
             ShortProgramMemory = WindowManager.RemoveDuplicates(ShortProgramMemory);
-            IOManager.SaveLPS(ProgramMemory, FolderPath.Get("memory", "actions", "long_term"), null, false, false);
-            IOManager.SaveLPS(ShortProgramMemory, FolderPath.Get("memory", "actions", "short_term"), null, false, false);
+            IOManager.SaveLPS(ProgramMemory, FolderPath.Get("memory", "actions", "programs", "long_term"), null, false, false);
+            IOManager.SaveLPS(ShortProgramMemory, FolderPath.Get("memory", "actions", "programs", "short_term"), null, false, false);
         }
 
-        private void savePreferences()
+        private static void saveInteract()
         {
-            IOManager.SaveLPS(ProgramPreferences, FolderPath.Get("memory", "personality", "preferences"), "apps", false);
+            IOManager.SaveLPS(ActionMemory, FolderPath.Get("memory", "actions", "interact", "long_term"), null, false, false);
+            IOManager.SaveLPS(ShortActionMemory, FolderPath.Get("memory", "actions", "interact", "short_term"), null, false, false);
         }
+
+        private static void saveProgramsPreferences() => IOManager.SaveLPS(ProgramPreferences, FolderPath.Get("memory", "personality", "preferences"), "apps", false);
+        private static void saveItemsPreferences() => IOManager.SaveLPS(ItemPreferences, FolderPath.Get("memory", "personality", "preferences"), "items", false);
+        private static void saveActionsPreferences() => IOManager.SaveLPS(ActionPreferences, FolderPath.Get("memory", "personality", "preferences"), "actions", false);
+        private static void saveTouchPreferences() => IOManager.SaveLPS(TouchPreferences, FolderPath.Get("memory", "personality", "preferences"), "touch", false);
     }
 }
