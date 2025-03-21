@@ -30,7 +30,7 @@ namespace VPet.Plugin.LolisBuddy
             setting.Load();
             AIsetting.Load();
 
-            Actions.assignEvents(MW);
+            EventsManager.assignEvents(MW);
 
             AIManager.Instance.updateMemory();
             GameTalkTimer = new TimerManager(setting.Name, setting.DelayTimer, setting.ChanceTalk);

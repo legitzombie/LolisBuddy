@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using LinePutScript.Converter;
 using LinePutScript.Localization.WPF;
-using VPet.Plugin.LolisBuddy.Core;
+using VPet.Plugin.LolisBuddy.Utilities;
 
-namespace VPet.Plugin.LolisBuddy.Utilities
+namespace VPet.Plugin.LolisBuddy.Core
 {
 
     public interface IMemoryEntry
@@ -13,8 +13,24 @@ namespace VPet.Plugin.LolisBuddy.Utilities
         string Name { get; set; }
     }
 
-    public class Interactions
+    public class InteractionsManager
     {
+
+        private static InteractionsManager _instance;
+        private static readonly object _lock = new object();
+
+        public static InteractionsManager Instance
+        {
+            get
+            {
+                lock (_lock)
+                {
+                    if (_instance == null)
+                        _instance = new InteractionsManager();
+                    return _instance;
+                }
+            }
+        }
 
         public static void Update<T>(string eventName, T item) where T : IMemoryEntry
         {
@@ -92,10 +108,6 @@ namespace VPet.Plugin.LolisBuddy.Utilities
                 _ => throw new NotSupportedException($"Type {typeof(T).Name} is not supported.")
             };
         }
-
-
-
-
 
 
     }

@@ -1,4 +1,5 @@
 ﻿using LinePutScript.Converter;
+using VPet.Plugin.LolisBuddy.Core;
 
 namespace VPet.Plugin.LolisBuddy.Utilities
 {
