@@ -19,9 +19,18 @@ namespace VPet.Plugin.LolisBuddy.Core
 
         private void updateData()
         {
-            if (name == "speech") interval = LolisBuddy.setting.DelayTimer; chance = LolisBuddy.setting.ChanceTalk;
-            if (name == "AIspeech") interval = LolisBuddy.AIsetting.DelayTimer; chance = LolisBuddy.AIsetting.ChanceTalk;
-            if (name == "AIpersonality") interval = LolisBuddy.AIsetting.LearningSpeed * 6000;
+            if (name == "speech")
+            {
+                interval = LolisBuddy.setting.DelayTimer; chance = LolisBuddy.setting.ChanceTalk;
+            }
+            if (name == "AIspeech")
+            {
+                interval = LolisBuddy.AIsetting.DelayTimer; chance = LolisBuddy.AIsetting.ChanceTalk;
+            }
+            if (name == "AIpersonality")
+            {
+                interval = LolisBuddy.AIsetting.LearningSpeed * 6000;
+            }
         }
 
         public string name { get; set; }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Media;
+using System.Windows;
 using LinePutScript;
 using LinePutScript.Converter;
 using VPet.Plugin.LolisBuddy.Sys;
@@ -58,14 +59,14 @@ namespace VPet.Plugin.LolisBuddy.Core
         public static void PlayDialogue(IMainWindow MW, TimerManager timer)
         {
             AnimationManager.Instance.updateAnimation(MW);
-            if (LolisBuddy.setting.Debug) Talk(MW, AnimationManager.Instance.debugMessage());
+            if (LolisBuddy.setting.Debug && timer.name == "speech") Talk(MW, AnimationManager.Instance.debugMessage());
             else
             {
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
                 {
                     GetRandomDialogue(MW, timer);
                     Talk(MW);
-                    playEffect(LolisBuddy.setting.SoundEffect);
+                    if (timer.name == "speech")  playEffect(LolisBuddy.setting.SoundEffect);
                 });
             }
         }
@@ -76,10 +77,11 @@ namespace VPet.Plugin.LolisBuddy.Core
             int delay = timer.interval;
             int chance = timer.chance;
 
+
             lastDialogue += delay;
 
-            if (name == "speech") timer.UpdateTimerInterval(LolisBuddy.setting.Name);
-            else if (name == "AIspeech") timer.UpdateTimerInterval(LolisBuddy.AIsetting.Name);
+            if (name == "speech") timer.UpdateTimerInterval(name);
+            else if (name == "AIspeech") timer.UpdateTimerInterval(name);
 
             if (canTalk(lastDialogue, timer)) PlayDialogue(MW, timer);
         }
@@ -97,9 +99,10 @@ namespace VPet.Plugin.LolisBuddy.Core
 
             List<DialogueEntry> filteredDialogues = new List<DialogueEntry>();
 
-            // short term memory
+            // game speech
             if (timer.name == "speech")
             {
+
                 filteredDialogues = dialogues.Where(d =>
                 string.Equals(d.Type, type, StringComparison.OrdinalIgnoreCase) &&
                 string.Equals(d.Mood, mood, StringComparison.OrdinalIgnoreCase) &&
@@ -109,15 +112,14 @@ namespace VPet.Plugin.LolisBuddy.Core
                 dialogue = filteredDialogues[random.Next(filteredDialogues.Count)];
 
             }
-            // long term memory
+            // memory
             if (timer.name == "AIspeech")
             {
                 dialogue = LanguageManager.GenerateSentence(mood, WindowManager.window.Category.ToString());
                 AIManager.SpeechMemory.Add(dialogue);
                 AIManager.ShortSpeechMemory.Add(dialogue);
+                AIManager.Instance.saveMemory("speech");
             }
-
-            AIManager.Instance.saveMemory("speech");
 
             if (dialogue.Dialogue.Length > 0) lastDialogue = 0;
         }
