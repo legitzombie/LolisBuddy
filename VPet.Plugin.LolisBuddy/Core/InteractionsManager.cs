@@ -76,14 +76,21 @@ namespace VPet.Plugin.LolisBuddy.Core
             return typeof(T) switch
             {
                 Type t when t == typeof(ItemEntry) => AIManager.ItemMemory
-                    .ToDictionary(item => item.Name, item => (IMemoryEntry)item),
+                    .GroupBy(item => item.Name) // Group by Name to avoid duplicates
+                    .ToDictionary(g => g.Key, g => (IMemoryEntry)g.First()), // Keep first entry
+
                 Type t when t == typeof(TouchEntry) => AIManager.TouchMemory
-                    .ToDictionary(item => item.Name, item => (IMemoryEntry)item),
+                    .GroupBy(item => item.Name)
+                    .ToDictionary(g => g.Key, g => (IMemoryEntry)g.First()),
+
                 Type t when t == typeof(ActionEntry) => AIManager.ActionMemory
-                    .ToDictionary(item => item.Name, item => (IMemoryEntry)item),
+                    .GroupBy(item => item.Name)
+                    .ToDictionary(g => g.Key, g => (IMemoryEntry)g.First()),
+
                 _ => throw new NotSupportedException($"Type {typeof(T).Name} is not supported.")
             };
         }
+
 
 
 

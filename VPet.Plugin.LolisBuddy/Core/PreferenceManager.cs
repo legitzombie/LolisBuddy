@@ -73,10 +73,11 @@ namespace VPet.Plugin.LolisBuddy.Core
                 foreach (var (name, usage) in entries)
                 {
                     bool overused = usage > (globalAvgUsage * 1.5f);
-                    bool underused = usage < (globalAvgUsage * 0.5f);
 
-                    UpdatePreferenceList(name, overused, underused);
+                    UpdatePreferenceList(name, overused, (int)usage);
                 }
+
+                //DecayPreferences();
 
                 // Assign preferences to the correct AIManager property before clearing
                 switch (Category)
@@ -101,42 +102,55 @@ namespace VPet.Plugin.LolisBuddy.Core
         }
 
 
-        private void UpdatePreferenceList(string name, bool overused, bool underused)
+        private void UpdatePreferenceList(string name, bool overused, int usage)
         {
             float moodMultiplier = GetMoodMultiplier();
             float cravingBoost = CravingBoost * moodMultiplier;
 
-            if (!interactionHistory.ContainsKey(name))
-                interactionHistory[name] = 0;
+            Random random = new Random();
 
+            // Ensure the history entry exists
+            if (!interactionHistory.ContainsKey(name))
+            {
+                interactionHistory[name] = 0;
+            }
+
+            // Ensure an entry exists in preferences
             var entry = preferences.FirstOrDefault(p => p.Name == name);
             if (entry == null)
             {
-                preferences.Add(new PreferenceEntry
-                {
-                    Name = name,
-                    Likeability = underused ? 0.3f * moodMultiplier : -0.3f * moodMultiplier
-                });
-                interactionHistory[name] = 1;
+                entry = new PreferenceEntry { Name = name, Likeability = 0f };
+                preferences.Add(entry);
             }
-            else
+
+            // Loop for each usage
+            for (int i = 0; i < usage; i++)
             {
+                float variation = (float)(random.NextDouble() * 0.1 - 0.05); // Random value between -0.05 and +0.05
+
                 if (overused)
                 {
-                    entry.Likeability -= OverindulgencePenalty;
-                    Console.WriteLine($"AI is getting bored of {name}.");
+                    float penalty = OverindulgencePenalty * (1f + variation);
+                    entry.Likeability -= penalty;
+                    Console.WriteLine($"AI is getting bored of {name}. Penalty: {penalty:F3}");
                 }
-                else if (underused)
+                else
                 {
-                    entry.Likeability += cravingBoost;
+                    float boost = cravingBoost * (1f + variation);
+                    entry.Likeability += boost;
+                    Console.WriteLine($"AI is craving {name}. Boost: {boost:F3}");
                 }
 
-                entry.Likeability = Math.Clamp(entry.Likeability, -1.0f, 1.0f);
                 interactionHistory[name]++;
             }
 
-            ApplyVarietySeeking(name);
+            // Clamp the Likeability value to stay within bounds
+            entry.Likeability = Math.Clamp(entry.Likeability, -1.0f, 1.0f);
+
         }
+
+
+
 
         private float GetMoodMultiplier() => GetMood() switch
         {
@@ -195,7 +209,7 @@ namespace VPet.Plugin.LolisBuddy.Core
                 if (Math.Abs(entry.Likeability) < 0.1f)
                     entry.Likeability = 0;
 
-                if (interactionHistory.TryGetValue(entry.Name, out int interactions) && interactions == 0 && entry.Likeability < 0.3f)
+                if (interactionHistory.TryGetValue(entry.Name, out int interactions) && interactions == 1 && entry.Likeability < 0.3f)
                 {
                     entry.Likeability += CravingBoost * 3;
                     Console.WriteLine($"AI is craving {entry.Name} after missing it!");
