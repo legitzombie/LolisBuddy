@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
-using System.Windows;
 using LinePutScript.Converter;
-using LinePutScript.Localization.WPF;
 using VPet.Plugin.LolisBuddy.Utilities;
 
 namespace VPet.Plugin.LolisBuddy.Core

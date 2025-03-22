@@ -27,10 +27,6 @@ namespace VPet.Plugin.LolisBuddy.Core
             {
                 interval = LolisBuddy.AIsetting.DelayTimer; chance = LolisBuddy.AIsetting.ChanceTalk;
             }
-            if (name == "AIpersonality")
-            {
-                interval = LolisBuddy.AIsetting.LearningSpeed * 6000;
-            }
         }
 
         public string name { get; set; }

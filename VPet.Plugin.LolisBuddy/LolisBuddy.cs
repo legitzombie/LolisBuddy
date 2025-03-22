@@ -34,7 +34,7 @@ namespace VPet.Plugin.LolisBuddy
             AIManager.Instance.updateMemory();
             GameTalkTimer = new TimerManager(setting.Name, setting.DelayTimer, setting.ChanceTalk);
             AITalkTimer = new TimerManager(AIsetting.Name, AIsetting.DelayTimer, AIsetting.ChanceTalk);
-            PersonalityTimer = new TimerManager("AIpersonality", AIsetting.LearningSpeed * 6000, 100);
+            PersonalityTimer = new TimerManager("AIpersonality", 6000, 100);
             InitializeTimers();
             AddSettingsMenu();
         }
@@ -51,7 +51,7 @@ namespace VPet.Plugin.LolisBuddy
 
             idleTimer.AddOrUpdateTimer(() => SleepTracker.CheckUserActivity(MW));
 
-            PersonalityTimer.AddOrUpdateTimer(() => PreferenceManager.Instance.Update(PersonalityTimer));
+            PersonalityTimer.AddOrUpdateTimer(() => PreferenceManager.Instance.Update());
         }
 
         private void AddSettingsMenu()

@@ -24,7 +24,6 @@ namespace VPet.Plugin.LolisBuddy
 
             GameTab.DataContext = UserSettings;
             LolisBuddyTab.DataContext = LolisBuddySettings;
-            LearningTab.DataContext = LolisBuddySettings;
         }
 
         private void SaveButton_Click(object sender, RoutedEventArgs e)
