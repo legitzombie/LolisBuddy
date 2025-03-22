@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Timers;
+using System.Windows;
 
 namespace VPet.Plugin.LolisBuddy.Core
 {
@@ -16,15 +17,24 @@ namespace VPet.Plugin.LolisBuddy.Core
             this.chance = chance;
         }
 
+        private void updateData()
+        {
+            if (name == "speech") interval = LolisBuddy.setting.DelayTimer; chance = LolisBuddy.setting.ChanceTalk;
+            if (name == "AIspeech") interval = LolisBuddy.AIsetting.DelayTimer; chance = LolisBuddy.AIsetting.ChanceTalk;
+            if (name == "AIpersonality") interval = LolisBuddy.AIsetting.LearningSpeed * 6000;
+        }
+
         public string name { get; set; }
         public int interval { get; set; }
         public int chance { get; set; }
 
         public void AddOrUpdateTimer(Action callback)
         {
+
+
             if (timers.ContainsKey(name))
             {
-                UpdateTimerInterval(name, interval, chance);
+                UpdateTimerInterval(name);
                 return;
             }
 
@@ -49,18 +59,17 @@ namespace VPet.Plugin.LolisBuddy.Core
             timer.Elapsed += handler;
             eventHandlers[name] = handler;
             timers[name] = timer;
+
         }
 
-        public void UpdateTimerInterval(string name, int newInterval, int chance)
+        public void UpdateTimerInterval(string name)
         {
+            updateData();
             if (timers.TryGetValue(name, out Timer timer))
             {
                 timer.Stop();
-                timer.Interval = newInterval;
-                interval = newInterval;
-                this.chance = chance;
 
-                timer.Start(); // ✅ Ensure it restarts after updating
+                timer.Start(); 
             }
         }
 

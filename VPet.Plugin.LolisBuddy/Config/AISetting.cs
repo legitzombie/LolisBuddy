@@ -9,6 +9,22 @@ namespace VPet.Plugin.LolisBuddy.Config
     public class AISetting
     {
 
+        private static AISetting _instance;
+        private static readonly object _lock = new object();
+
+        public static AISetting Instance
+        {
+            get
+            {
+                lock (_lock)
+                {
+                    if (_instance == null)
+                        _instance = new AISetting();
+                    return _instance;
+                }
+            }
+        }
+
         private int delayTimer = 60000; // loop interval
         private int delayTalk = 5000; // minimum delay between dialogue
         private int chanceTalk = 5; // chance to talk

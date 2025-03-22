@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using LinePutScript;
 using LinePutScript.Converter;
+using VPet.Plugin.LolisBuddy.Core;
 using VPet.Plugin.LolisBuddy.Sys;
 using VPet.Plugin.LolisBuddy.Utilities;
 
@@ -8,6 +9,21 @@ namespace VPet.Plugin.LolisBuddy.Config
 {
     public class Setting
     {
+        private static Setting _instance;
+        private static readonly object _lock = new object();
+
+        public static Setting Instance
+        {
+            get
+            {
+                lock (_lock)
+                {
+                    if (_instance == null)
+                        _instance = new Setting();
+                    return _instance;
+                }
+            }
+        }
 
         private int delayTimer = 60000; // loop interval
         private int delayTalk = 5000; // minimum delay between dialogue

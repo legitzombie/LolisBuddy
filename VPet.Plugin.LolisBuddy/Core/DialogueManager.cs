@@ -78,9 +78,8 @@ namespace VPet.Plugin.LolisBuddy.Core
 
             lastDialogue += delay;
 
-            if (name == "speech") timer.UpdateTimerInterval(LolisBuddy.setting.Name, LolisBuddy.setting.DelayTimer, LolisBuddy.setting.ChanceTalk);
-            else if (name == "AIspeech") timer.UpdateTimerInterval(LolisBuddy.AIsetting.Name, LolisBuddy.AIsetting.DelayTimer, LolisBuddy.AIsetting.ChanceTalk);
-            else timer.UpdateTimerInterval(name, delay, chance);
+            if (name == "speech") timer.UpdateTimerInterval(LolisBuddy.setting.Name);
+            else if (name == "AIspeech") timer.UpdateTimerInterval(LolisBuddy.AIsetting.Name);
 
             if (canTalk(lastDialogue, timer)) PlayDialogue(MW, timer);
         }
@@ -97,8 +96,6 @@ namespace VPet.Plugin.LolisBuddy.Core
             var mood = AnimationManager.Instance.animation.ModeType.ToString();
 
             List<DialogueEntry> filteredDialogues = new List<DialogueEntry>();
-
-            AIManager.Instance.updateMemory("speech");
 
             // short term memory
             if (timer.name == "speech")

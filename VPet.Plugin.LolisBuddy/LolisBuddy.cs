@@ -51,7 +51,7 @@ namespace VPet.Plugin.LolisBuddy
 
             idleTimer.AddOrUpdateTimer(() => SleepTracker.CheckUserActivity(MW));
 
-            PersonalityTimer.AddOrUpdateTimer(() => PreferenceManager.Instance.Update());
+            PersonalityTimer.AddOrUpdateTimer(() => PreferenceManager.Instance.Update(PersonalityTimer));
         }
 
         private void AddSettingsMenu()
