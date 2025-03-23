@@ -1,0 +1,10 @@
+startup:|Type#startup:|Name#newyear:|Mood#Happy:|Dialogue#Hehehe~! Oni-chan, I'm back!:|SoundEffect#test.wav:|
+startup:|Type#startup:|Name#newyear:|Mood#Nomal:|Dialogue#Mmm, wakey wakey~! Let's go, Oni-chan!:|SoundEffect#test.wav:|
+startup:|Type#startup:|Name#newyear:|Mood#PoorCondition:|Dialogue#Ughh... five more minutes...:|SoundEffect#test.wav:|
+startup:|Type#startup:|Name#newyear:|Mood#ill:|Dialogue#Nnn... system... booting... barely...:|SoundEffect#test.wav:|
+
+startup:|Type#startup:|Name#startup:|Mood#Happy:|Dialogue#Yahoo~! , let's have fun today!:|SoundEffect#test.wav:|
+startup:|Type#startup:|Name#startup:|Mood#Nomal:|Dialogue#Mou~! You took long enough, !:|SoundEffect#test.wav:|
+startup:|Type#startup:|Name#startup:|Mood#PoorCondition:|Dialogue#Ugh... running at 10% energy...:|SoundEffect#test.wav:|
+startup:|Type#startup:|Name#startup:|Mood#ill:|Dialogue#Nn... critical startup... errors...:|SoundEffect#test.wav:|
+

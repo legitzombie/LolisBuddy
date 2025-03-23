@@ -1,0 +1,4 @@
+switch_Thirsty:|Type#switch_Thirsty:|Name#Thirsty:|Mood#Happy:|Dialogue#I'm so parched, oni-chan~!:|SoundEffect#test.wav|
+switch_Thirsty:|Type#switch_Thirsty:|Name#Thirsty:|Mood#Nomal:|Dialogue#Need... water...:|SoundEffect#test.wav|
+switch_Thirsty:|Type#switch_Thirsty:|Name#Thirsty:|Mood#PoorCondition:|Dialogue#Dying of thirst... send help...:|SoundEffect#test.wav| 
+switch_Thirsty:|Type#switch_Thirsty:|Name#Thirsty:|Mood#ill:|Dialogue#Hallucinating a soda fountain...:|SoundEffect#test.wav|

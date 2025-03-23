@@ -1,0 +1,4 @@
+switch_hunger:|Type#switch_hunger:|Name#Hunger:|Mood#Happy:|Dialogue#I could go for a little snack, oni-chan~!:|SoundEffect#test.wav:|
+switch_hunger:|Type#switch_hunger:|Name#Hunger:|Mood#Nomal:|Dialogue#Starting to feel a bit hungry...|  
+switch_hunger:|Type#switch_hunger:|Name#Hunger:|Mood#PoorCondition:|Dialogue#Stomach growling... need food...:|SoundEffect#test.wav:|
+switch_hunger:|Type#switch_hunger:|Name#Hunger:|Mood#ill:|Dialogue#So hungry... everything looks like food...:|SoundEffect#test.wav:|
