@@ -46,9 +46,17 @@ namespace VPet.Plugin.LolisBuddy.Core
             player.Play();
         }
 
-        public static void Talk(IMainWindow main, string msg = null)
+        public static void Talk(IMainWindow main, TimerManager timer, string msg = null)
         {
-            main.Main.Say(msg ?? dialogue?.Dialogue ?? string.Empty);
+            if (timer.name == "speech")
+            {
+                main.Main.Say(msg ?? dialogue?.Dialogue ?? string.Empty);
+            }else if (timer.name == "AIspeech" && AIManager.CanTalk)
+            {
+                main.Main.Say(msg ?? dialogue?.Dialogue ?? string.Empty);
+                AIManager.resetSpeech();
+            }
+
         }
 
         public static bool canTalk(int timerElapsed, TimerManager timer)
@@ -59,13 +67,13 @@ namespace VPet.Plugin.LolisBuddy.Core
         public static void PlayDialogue(IMainWindow MW, TimerManager timer)
         {
             AnimationManager.Instance.updateAnimation(MW);
-            if (LolisBuddy.setting.Debug && timer.name == "speech") Talk(MW, AnimationManager.Instance.debugMessage());
+            if (LolisBuddy.setting.Debug && timer.name == "speech") Talk(MW, timer, AnimationManager.Instance.debugMessage());
             else
             {
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
                 {
                     GetRandomDialogue(MW, timer);
-                    Talk(MW);
+                    Talk(MW, timer);
                     if (timer.name == "speech")  playEffect(LolisBuddy.setting.SoundEffect);
                 });
             }
@@ -113,9 +121,10 @@ namespace VPet.Plugin.LolisBuddy.Core
 
             }
             // memory
-            if (timer.name == "AIspeech")
+            if (timer.name == "AIspeech" && AIManager.CanTalk)
             {
-                dialogue = LanguageManager.GenerateSentence(mood, WindowManager.window.Category.ToString());
+
+                dialogue = LanguageManager.GenerateSentence(AIManager.Mood, AIManager.Subject);
                 AIManager.SpeechMemory.Add(dialogue);
                 AIManager.ShortSpeechMemory.Add(dialogue);
                 AIManager.Instance.saveMemory("speech");

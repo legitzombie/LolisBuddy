@@ -1,7 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using VPet.Plugin.LolisBuddy.Sys;
 using VPet.Plugin.LolisBuddy.UI;
 using VPet.Plugin.LolisBuddy.Utilities;
+using System;
+using System.Windows;
 
 namespace VPet.Plugin.LolisBuddy.Core
 {
@@ -21,6 +24,28 @@ namespace VPet.Plugin.LolisBuddy.Core
                     return _instance;
                 }
             }
+        }
+
+        public static string Mood { get; set; } = "";
+
+        public static string Subject { get; set; } = "";
+
+        public static bool CanTalk { get; set; } = false;
+
+        public static void resetSpeech()
+        {
+            Mood = "";
+            Subject = "";
+            CanTalk = false;
+        }
+
+
+        public static void setSpeech(string mood, string subject)
+        {
+            //MessageBox.Show($"3. {mood} \n {subject}");
+            Mood = mood;
+            Subject = subject;
+            CanTalk = true;
         }
 
         public static List<ActionEntry> ActionMemory { get; set; } = new List<ActionEntry>();

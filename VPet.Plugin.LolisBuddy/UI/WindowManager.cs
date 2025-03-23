@@ -27,11 +27,9 @@ namespace VPet.Plugin.LolisBuddy.UI
 
         public static WindowEntry window = new WindowEntry();
 
+        private static Random rand = new Random();
 
 
-        /// <summary>
-        /// Gets details of the currently active process (name, window title, and uptime).
-        /// </summary>
         public static void UpdateActiveWindowDetails()
         {
             nint hWnd = GetForegroundWindow(); // Get active window handle
@@ -55,26 +53,29 @@ namespace VPet.Plugin.LolisBuddy.UI
                 windowTitle = info[1];
 
                 if (ProcessesManager.IsBlacklisted(processName)) return;
+                bool isWebsite = Websites.Categories.ContainsKey(category);
 
-                // Update current window details
+
+                if (isWebsite)
+                {
+                    processName = windowTitle;
+                }
+
                 window.Title = windowTitle;
                 window.Category = category;
                 window.Date = date;
                 window.Process = processName;
                 window.Runtime += 1000; // Increment runtime
 
-                bool isWebsite = Websites.Categories.ContainsKey(category);
-
                 // Find index of existing entry
-                int existingIndex = AIManager.ProgramMemory.FindIndex(w => isWebsite ? w.Category == category : w.Process == processName);
-                int shortExistingIndex = AIManager.ShortProgramMemory.FindIndex(w => isWebsite ? w.Category == category : w.Process == processName);
-
-
-                if (existingIndex != -1)
+                int longIndex = AIManager.ProgramMemory.FindIndex(w => isWebsite ? w.Category == category : w.Process == processName);
+                int shortIndex = AIManager.ShortProgramMemory.FindIndex(w => isWebsite ? w.Category == category : w.Process == processName);
+                
+                if (longIndex != -1)
                 {
                     // Update runtime and date in the actual list
-                    AIManager.ProgramMemory[existingIndex].Date = date;
-                    AIManager.ProgramMemory[existingIndex].Runtime += 1000;
+                    AIManager.ProgramMemory[longIndex].Date = date;
+                    AIManager.ProgramMemory[longIndex].Runtime += 1000;
                 }
                 else
                 {
@@ -87,16 +88,17 @@ namespace VPet.Plugin.LolisBuddy.UI
                         Date = date,
                         Category = category
                     });
+
                 }
 
-
-                if (shortExistingIndex != -1)
+                if (shortIndex != -1)
                 {
-                    AIManager.ShortProgramMemory[shortExistingIndex].Date = date;
-                    AIManager.ShortProgramMemory[shortExistingIndex].Runtime += 1000;
+                    AIManager.ShortProgramMemory[shortIndex].Runtime += 1000;
+                    AIManager.ShortProgramMemory[shortIndex].Date = date;
                 }
                 else
                 {
+                    // Add new entry if no match found
                     AIManager.ShortProgramMemory.Add(new WindowEntry
                     {
                         Process = processName,
@@ -105,10 +107,15 @@ namespace VPet.Plugin.LolisBuddy.UI
                         Date = date,
                         Category = category
                     });
-                }
 
+                }
+                if (rand.Next(1000) == 0)
+                {
+                    AIManager.setSpeech(InteractionsManager.GetItemLikeability(AIManager.ProgramPreferences, processName), category);
+                }
                 // Save updated memory
                 AIManager.Instance.saveMemory("programs");
+                
             }
             catch (IOException)
             {
@@ -132,11 +139,6 @@ namespace VPet.Plugin.LolisBuddy.UI
         }
 
 
-
-
-        /// <summary>
-        /// Gets the window title of the given window handle.
-        /// </summary>
         private static string GetActiveWindowTitle(nint hWnd)
         {
             StringBuilder title = new StringBuilder(256);

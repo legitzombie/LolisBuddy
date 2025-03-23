@@ -46,7 +46,7 @@ namespace VPet.Plugin.LolisBuddy.Core
 
             var categorizedEntries = new Dictionary<string, List<(string Name, float Usage)>>()
     {
-        { "programspreferences", AIManager.ProgramMemory?.Select(p => (p.Title, MathF.Log(p.Runtime / 600000f + 1))).ToList() },
+        { "programspreferences", AIManager.ProgramMemory?.Select(p => (p.Process, MathF.Log(p.Runtime / 600000f + 1))).ToList() },
         { "itemspreferences", AIManager.ItemMemory?.Select(i => (i.Name, (float)i.Eaten)).ToList() },
         { "actionspreferences", AIManager.ActionMemory?.Select(a => (a.Name, (float)a.Interactions)).ToList() },
         { "touchpreferences", AIManager.TouchMemory?.Select(t => (t.Name, (float)t.Touches)).ToList() }

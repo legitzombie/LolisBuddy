@@ -1,4 +1,5 @@
-﻿using LinePutScript.Converter;
+﻿using System.Xml.Linq;
+using LinePutScript.Converter;
 using LinePutScript.Localization.WPF;
 using VPet.Plugin.LolisBuddy.Utilities;
 using VPet_Simulator.Core;
@@ -42,16 +43,22 @@ namespace VPet.Plugin.LolisBuddy.Core
             string type = food.Type.ToString().Translate();
 
             InteractionsManager.Update(name, new ItemEntry { Name = name, Type = type });
+            AIManager.setSpeech(InteractionsManager.GetItemLikeability(AIManager.ItemPreferences, name), name);
+
         }
 
         private static void TouchBodyHandler()
         {
-            InteractionsManager.Update("touchbody", new TouchEntry { Name = "touchbody" });
+            string name = "touchbody";
+            InteractionsManager.Update(name, new TouchEntry { Name = name });
+            AIManager.setSpeech(InteractionsManager.GetItemLikeability(AIManager.ItemPreferences, name), name);
         }
 
         private static void TouchHeadHandler()
         {
-            InteractionsManager.Update("touchhead", new TouchEntry { Name = "touchhead" });
+            string name = "touchhead";
+            InteractionsManager.Update(name, new TouchEntry { Name = name });
+            AIManager.setSpeech(InteractionsManager.GetItemLikeability(AIManager.ItemPreferences, name), name);
         }
 
         private static void WorkEndHandler(WorkTimer.FinishWorkInfo info)
@@ -63,6 +70,7 @@ namespace VPet.Plugin.LolisBuddy.Core
         {
             string name = work.Name.Translate();
             InteractionsManager.Update(name, new ActionEntry { Name = name });
+            AIManager.setSpeech(InteractionsManager.GetItemLikeability(AIManager.ItemPreferences, name), name);
         }
 
     }
@@ -74,3 +82,4 @@ namespace VPet.Plugin.LolisBuddy.Core
         [Line] public int Interactions { get; set; } = 1;
     }
 }
+                 

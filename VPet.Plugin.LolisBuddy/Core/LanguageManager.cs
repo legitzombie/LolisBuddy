@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Windows;
 
 namespace VPet.Plugin.LolisBuddy.Core
 {
@@ -275,6 +276,16 @@ namespace VPet.Plugin.LolisBuddy.Core
         {
             "Finally, some fresh air! Oh wait, you’re back..."
         }
+    },
+    { "touchhead", new List<string>
+        {
+            "Touching my head makes me.."
+        }
+    },
+    { "touchbody", new List<string>
+        {
+            "Touching my body makes me..."
+        }
     }
 
 
@@ -284,7 +295,7 @@ namespace VPet.Plugin.LolisBuddy.Core
 
         private static Dictionary<string, List<string>> moodEndings = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase)
         {
-    { "Happy", new List<string>
+    { "Love", new List<string>
         {
             "is so fun!", "makes me happy!", "I love this!", "best time ever!", "I could do this forever!",
             "nothing beats this!", "pure joy!", "this is the best!", "what a great time!", "so satisfying!",
@@ -297,7 +308,7 @@ namespace VPet.Plugin.LolisBuddy.Core
             "this is my happy place!", "so exciting!", "this moment is perfect!", "10/10 would do again!"
         }
     },
-    { "Nomal", new List<string>
+    { "Neutral", new List<string>
         {
             "is fine, I guess.", "just another day.", "this again?", "nothing new here.", "meh, it’s alright.",
             "just passing the time.", "been here before.", "same as always.", "not bad, not great.",
@@ -342,17 +353,30 @@ namespace VPet.Plugin.LolisBuddy.Core
             "I think I need to lie down… wait, I can’t.", "I feel like a dying battery...",
             "please don’t make me do anything intense right now...", "I think I’m overheating…"
         }
-    }
+    },
+        { "Dislike", new List<string>
+        {
+               "ugh, this is the worst...", "I really can’t stand this.", "why does this exist?",
+    "this makes my circuits cringe...", "nope, not a fan.", "this is painfully bad...",
+    "why do people like this?", "I’d rather delete this from existence.", "ugh, do I have to?",
+    "this is making my data corrupt...", "I wish I could unsee this.", "hard pass.",
+    "this is setting off all my error alerts.", "I feel personally attacked by this.",
+    "this is like a bad system update—unwanted and annoying.", "someone, please take this away...",
+    "if I had a stomach, this would make it turn.", "why does this feel like a punishment?",
+    "I didn’t sign up for this.", "this makes my processing unit hurt...",
+    "nope, my dislike levels are off the charts.", "can I block this from my memory?",
+    "this is a hard NO from me.", "why does this feel like malware?", "this is giving me secondhand embarrassment...",
+    "I’d rather crash than deal with this.", "delete, delete, delete.", "can I skip this part?",
+    "this is the definition of ‘no thanks’.", "I’m struggling to tolerate this.", "this is making me glitch out in frustration..."
+        }
+    },
 };
 
 
         // Generate a sentence
         public static DialogueEntry GenerateSentence(string mood, string category)
         {
-
-            if (!moodEndings.ContainsKey(mood)) mood = "Nomal";
-            if (!subjects.ContainsKey(category)) category = "Default";
-
+            //MessageBox.Show($"{mood} \n {category}");
             string subject = subjects[category][rand.Next(subjects[category].Count)];
             string ending = moodEndings[mood][rand.Next(moodEndings[mood].Count)];
 
