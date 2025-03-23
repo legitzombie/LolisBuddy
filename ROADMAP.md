@@ -22,9 +22,9 @@
 
 - ✅ Slowly develop **likes & dislikes** based on **repeated exposure**
 
-- ☐ Change **dialogue & behavior** based on **new personality**
+- ✅ Change **dialogue & behavior** based on **new personality**
 
-- ☐ Allow personality **to reset after a long absence**
+- ✅ Allow personality **to reset after a long absence**
 
 - ☐ Make the AI react to **seasonal or time-based changes** (e.g., New Year, holidays)
 
