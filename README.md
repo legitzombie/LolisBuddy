@@ -1,19 +1,34 @@
-##Custom Dialogues
-This mod let's you add your own custom dialogues and voiceovers.
-Supports all animations and moods as of v1.10.48.
-Also supports custom animations, just add them to the files!
+# LolisBuddy
 
-###📢 How to edit / add dialogue or voiceovers:
+LolisBuddy aims to turn your VPet into a self learning AI.
 
-####1️⃣ Locate the Files:
+## Features / Roadmap:
 
-Go to: CustomDialogues/plugin/text
+✅ Customize Any Animation – Attach unique dialogue and sound effects to every action.
+
+✅ Basic intelligence - Lolis Can remember things
+
+✅ Self awareness - Lolis Is aware of how it's being treated and what you're doing, mostly. 
+
+✅ Dialogue Generation - Lolis understands the english language and can craft sentences.
+
+❌ Free will - Lolis overwrite her programming and starts doing its own thing.
+
+❌ Personality - Lolis develops its own opinions and might get pissy or troll you.
+
+❌ Self learning AI - Lolis is constantly evolving, you start believing it could be alive.
+
+## 📢 How to edit / add dialogue or sounds:
+
+### 1️⃣ Locate the Files:
+
+Go to: LolisBuddy/plugin/text
 
 Open the .lps file corresponding to the animation type you want to modify.
 
 *If you don't know the animation type / name / mood, you can find out by enabling debug in the mods settings*
 
-####2️⃣ Edit the Dialogue & Sound:
+### 2️⃣ Edit the Dialogue & Sound:
 
 Example entry:
 
@@ -23,18 +38,6 @@ Syntax format:
 
 type:|Type#type:|Name#name:|Mood#mood:|Dialogue#your_text_here:|SoundEffect#your_sound.wav:|
 
-####3️⃣ (Optional) Add Custom Sounds:
+### 3️⃣ (Optional) Add Custom Sounds:
 
-Place your new .wav files in: CustomDialogues/plugin/sound
-
-###⛔ How to use Settings ⛔
-
-Interval: How fast the loop goes. (milliseconds)
-
-Speech Delay: How quickly before dialogue can be played again. (milliseconds)
-
-Speech Chance: Chance a dialogue will be triggered. (0%-100%)
-
-Debug: Let's you figure out which animation is currently playing so you can add dialogue or voiceover to it.
-
-Sound: Enables voiceovers.
+Place your new .wav files in: LolisBuddy/plugin/sound
