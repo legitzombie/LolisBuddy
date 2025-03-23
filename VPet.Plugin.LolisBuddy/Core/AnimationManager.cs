@@ -26,6 +26,7 @@ namespace VPet.Plugin.LolisBuddy.Core
 
         public void updateAnimation(IMainWindow main)
         {
+            AIManager.Mood = main.GameSavesData.GameSave.Feeling.ToString();
             animation = main.Main.DisplayType;
         }
         public string debugMessage()

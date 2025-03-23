@@ -88,26 +88,6 @@ namespace VPet.Plugin.LolisBuddy.Core
             };
         }
 
-        public static string GetItemLikeability(List<PreferenceEntry> list, string name)
-        {
-
-            var item = list.FirstOrDefault(x => x.Name == name);
-            if (list == null || item == null)
-            {
-                return "Neutral";
-            }
-            //MessageBox.Show("2. " + item.Name + "\n" + item.Likeability);
-
-            return item.Likeability switch
-            {
-                <= -0.25f => "Hate",
-                < -0.1f => "Dislike",
-                >= 0.25f => "Love",
-                > 0.1f => "Like",
-                _ => "Neutral"
-            };
-        }
-
 
 
         private static void IncrementCount(IMemoryEntry entry)

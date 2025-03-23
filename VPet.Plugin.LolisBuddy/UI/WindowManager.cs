@@ -111,7 +111,7 @@ namespace VPet.Plugin.LolisBuddy.UI
                 }
                 if (rand.Next(1000) == 0)
                 {
-                    AIManager.setSpeech(InteractionsManager.GetItemLikeability(AIManager.ProgramPreferences, processName), category);
+                    AIManager.setSpeech(PreferenceManager.GetItemLikeability(AIManager.ProgramPreferences, processName), category);
                 }
                 // Save updated memory
                 AIManager.Instance.saveMemory("programs");

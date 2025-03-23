@@ -5,6 +5,8 @@ using VPet.Plugin.LolisBuddy.UI;
 using VPet.Plugin.LolisBuddy.Utilities;
 using System;
 using System.Windows;
+using VPet_Simulator.Core;
+using VPet_Simulator.Windows.Interface;
 
 namespace VPet.Plugin.LolisBuddy.Core
 {
@@ -34,7 +36,8 @@ namespace VPet.Plugin.LolisBuddy.Core
 
         public static void resetSpeech()
         {
-            Mood = "";
+            GameSave ok = new GameSave();
+            ok.Feeling;
             Subject = "";
             CanTalk = false;
         }
