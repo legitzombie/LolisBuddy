@@ -34,10 +34,9 @@ namespace VPet.Plugin.LolisBuddy.Core
 
         public static bool CanTalk { get; set; } = false;
 
-        public static void resetSpeech()
+        public static void resetSpeech(IMainWindow main)
         {
-            GameSave ok = new GameSave();
-            ok.Feeling;
+            Mood = main.GameSavesData.GameSave.Feeling.ToString();
             Subject = "";
             CanTalk = false;
         }

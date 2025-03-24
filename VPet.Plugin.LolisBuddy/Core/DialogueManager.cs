@@ -48,15 +48,8 @@ namespace VPet.Plugin.LolisBuddy.Core
 
         public static void Talk(IMainWindow main, TimerManager timer, string msg = null)
         {
-            if (timer.name == "speech")
-            {
                 main.Main.Say(msg ?? dialogue?.Dialogue ?? string.Empty);
-            }else if (timer.name == "AIspeech" && AIManager.CanTalk)
-            {
-                main.Main.Say(msg ?? dialogue?.Dialogue ?? string.Empty);
-                AIManager.resetSpeech();
-            }
-
+                AIManager.resetSpeech(main);
         }
 
         public static bool canTalk(int timerElapsed, TimerManager timer)
@@ -67,16 +60,12 @@ namespace VPet.Plugin.LolisBuddy.Core
         public static void PlayDialogue(IMainWindow MW, TimerManager timer)
         {
             AnimationManager.Instance.updateAnimation(MW);
-            if (LolisBuddy.setting.Debug && timer.name == "speech") Talk(MW, timer, AnimationManager.Instance.debugMessage());
-            else
-            {
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
                 {
                     GetRandomDialogue(MW, timer);
                     Talk(MW, timer);
-                    if (timer.name == "speech")  playEffect(LolisBuddy.setting.SoundEffect);
                 });
-            }
+            
         }
 
         public static void HandleDialogue(IMainWindow MW, TimerManager timer)
@@ -88,8 +77,7 @@ namespace VPet.Plugin.LolisBuddy.Core
 
             lastDialogue += delay;
 
-            if (name == "speech") timer.UpdateTimerInterval(name);
-            else if (name == "AIspeech") timer.UpdateTimerInterval(name);
+            timer.UpdateTimerInterval(name);
 
             if (canTalk(lastDialogue, timer)) PlayDialogue(MW, timer);
         }
@@ -107,28 +95,11 @@ namespace VPet.Plugin.LolisBuddy.Core
 
             List<DialogueEntry> filteredDialogues = new List<DialogueEntry>();
 
-            // game speech
-            if (timer.name == "speech")
-            {
-
-                filteredDialogues = dialogues.Where(d =>
-                string.Equals(d.Type, type, StringComparison.OrdinalIgnoreCase) &&
-                string.Equals(d.Mood, mood, StringComparison.OrdinalIgnoreCase) &&
-                (type.Equals("default", StringComparison.OrdinalIgnoreCase) || string.Equals(d.Name, name, StringComparison.OrdinalIgnoreCase))
-                ).ToList();
-                if (filteredDialogues.Count == 0) { return; }
-                dialogue = filteredDialogues[random.Next(filteredDialogues.Count)];
-
-            }
-            // memory
-            if (timer.name == "AIspeech" && AIManager.CanTalk)
-            {
 
                 dialogue = LanguageManager.GenerateSentence(AIManager.Mood, AIManager.Subject);
                 AIManager.SpeechMemory.Add(dialogue);
                 AIManager.ShortSpeechMemory.Add(dialogue);
                 AIManager.Instance.saveMemory("speech");
-            }
 
             if (dialogue.Dialogue.Length > 0) lastDialogue = 0;
         }

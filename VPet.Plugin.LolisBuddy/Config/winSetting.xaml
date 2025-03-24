@@ -20,113 +20,49 @@
 
 
 
-    <TabControl pu:TabControlHelper.CanHeaderPanelScroll="True" pu:TabControlHelper.ItemsCornerRadius="4"
-                pu:TabControlHelper.ItemsHeight="NaN"
-                pu:TabControlHelper.ItemsHoverBackground="{DynamicResource PrimaryLight}"
-                pu:TabControlHelper.ItemsPadding="10,7"
-                pu:TabControlHelper.ItemsSelectedBackground="{DynamicResource PrimaryDark}"
-                pu:TabControlHelper.ItemsSelectedForeground="{DynamicResource DARKPrimaryText}" Background="Transparent"
-                BorderThickness="0" Foreground="{DynamicResource PrimaryText}" Margin="5,5,5,0">
 
-        <TabItem Header="Game" x:Name="GameTab" IsSelected="True">
-            
-            <Grid Margin="10">
+    <Grid Margin="10">
 
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="10"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="10"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="10"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="10"/>
-                    <RowDefinition Height="Auto"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="Auto"/>
 
-                </Grid.RowDefinitions>
+
+        </Grid.RowDefinitions>
 
 
 
-                <!-- Interval -->
-                <TextBlock Foreground="{DynamicResource DARKPrimary}" Text="Interval:" Grid.Row="0" ToolTip="1000 = 1 second"/>
-                <TextBox Style="{StaticResource StandardTextBoxStyle}" Text="{Binding DelayTimer, UpdateSourceTrigger=PropertyChanged}" 
+
+
+        <!-- Interval -->
+        <TextBlock Foreground="{DynamicResource DARKPrimary}" Text="Interval:" Grid.Row="0" ToolTip="1000 = 1 second"/>
+        <TextBox Style="{StaticResource StandardTextBoxStyle}" Text="{Binding DelayTimer, UpdateSourceTrigger=PropertyChanged}" 
                              Grid.Row="0" HorizontalAlignment="Right" Width="120" Margin="0,0,50,0"/>
 
-                <!-- Speech Delay -->
-                <TextBlock Foreground="{DynamicResource DARKPrimary}" Text="Speech Delay:" Grid.Row="2" ToolTip="1000 = 1 second"/>
-                <TextBox Style="{StaticResource StandardTextBoxStyle}" Text="{Binding DelayTalk, UpdateSourceTrigger=PropertyChanged}" 
+        <!-- Speech Delay -->
+        <TextBlock Foreground="{DynamicResource DARKPrimary}" Text="Speech Delay:" Grid.Row="2" ToolTip="1000 = 1 second"/>
+        <TextBox Style="{StaticResource StandardTextBoxStyle}" Text="{Binding DelayTalk, UpdateSourceTrigger=PropertyChanged}" 
                              Grid.Row="2" HorizontalAlignment="Right" Width="120" Margin="0,0,50,0"/>
 
-                <!-- Speech Chance (Slider + Value) -->
-                <TextBlock  Foreground="{DynamicResource DARKPrimary}" Text="Speech Chance:" Grid.Row="4"/>
-                <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Slider Style="{StaticResource StandardSliderStyle}" Minimum="0" Maximum="100" Width="120" Margin="0,0,0,0"
+        <!-- Speech Chance (Slider + Value) -->
+        <TextBlock  Foreground="{DynamicResource DARKPrimary}" Text="Speech Chance:" Grid.Row="4"/>
+        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Slider Style="{StaticResource StandardSliderStyle}" Minimum="0" Maximum="100" Width="120" Margin="0,0,0,0"
                                 Value="{Binding ChanceTalk, UpdateSourceTrigger=PropertyChanged}"/>
-                    <TextBlock Foreground="{DynamicResource DARKPrimary}" Text="{Binding ChanceTalk}" Width="50" TextAlignment="Center"/>
-                </StackPanel>
+            <TextBlock Foreground="{DynamicResource DARKPrimary}" Text="{Binding ChanceTalk}" Width="50" TextAlignment="Center"/>
+        </StackPanel>
 
-                <!-- Enable Debug -->
-                <CheckBox Style="{StaticResource ThemedCheckBoxStyle}" Content="Enable Debug" IsChecked="{Binding Debug}" Grid.Row="6"
-                              VerticalAlignment="Bottom" Margin="30,10,0,10" HorizontalAlignment="Left" />
-                <CheckBox Style="{StaticResource ThemedCheckBoxStyle}" Content="Enable Sound" IsChecked="{Binding SoundEffect}" Grid.Row="6"
-                              VerticalAlignment="Bottom" Margin="0,10,30,10" HorizontalAlignment="Right"/>
 
-                <!-- Save Button -->
-                <Button Style="{StaticResource ThemedButtonStyle}" Content="Save Settings" Grid.Row="8" HorizontalAlignment="Center"
+        <!-- Save Button -->
+        <Button Style="{StaticResource ThemedButtonStyle}" Content="Save Settings" Grid.Row="8" HorizontalAlignment="Center"
                             Click="SaveButton_Click" Margin="0,0,0,40" Grid.RowSpan="2" />
-            </Grid>
-        </TabItem>
+    </Grid>
 
-
-        <TabItem Header="{ll:Str 'LolisBuddy'}" x:Name="LolisBuddyTab">
-            <Grid Margin="10">
-
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="10"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="10"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="10"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="10"/>
-                    <RowDefinition Height="Auto"/>
-
-
-                </Grid.RowDefinitions>
-
-
-
-
-
-                <!-- Interval -->
-                <TextBlock Foreground="{DynamicResource DARKPrimary}" Text="Interval:" Grid.Row="0" ToolTip="1000 = 1 second"/>
-                <TextBox Style="{StaticResource StandardTextBoxStyle}" Text="{Binding DelayTimer, UpdateSourceTrigger=PropertyChanged}" 
-                             Grid.Row="0" HorizontalAlignment="Right" Width="120" Margin="0,0,50,0"/>
-
-                <!-- Speech Delay -->
-                <TextBlock Foreground="{DynamicResource DARKPrimary}" Text="Speech Delay:" Grid.Row="2" ToolTip="1000 = 1 second"/>
-                <TextBox Style="{StaticResource StandardTextBoxStyle}" Text="{Binding DelayTalk, UpdateSourceTrigger=PropertyChanged}" 
-                             Grid.Row="2" HorizontalAlignment="Right" Width="120" Margin="0,0,50,0"/>
-
-                <!-- Speech Chance (Slider + Value) -->
-                <TextBlock  Foreground="{DynamicResource DARKPrimary}" Text="Speech Chance:" Grid.Row="4"/>
-                <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Slider Style="{StaticResource StandardSliderStyle}" Minimum="0" Maximum="100" Width="120" Margin="0,0,0,0"
-                                Value="{Binding ChanceTalk, UpdateSourceTrigger=PropertyChanged}"/>
-                    <TextBlock Foreground="{DynamicResource DARKPrimary}" Text="{Binding ChanceTalk}" Width="50" TextAlignment="Center"/>
-                </StackPanel>
-
-
-                <!-- Save Button -->
-                <Button Style="{StaticResource ThemedButtonStyle}" Content="Save Settings" Grid.Row="8" HorizontalAlignment="Center"
-                            Click="SaveButton_Click" Margin="0,0,0,40" Grid.RowSpan="2" />
-            </Grid>
-
-        </TabItem>
-
-
-
-    </TabControl>
-    
 </Window>

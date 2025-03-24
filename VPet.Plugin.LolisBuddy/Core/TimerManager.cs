@@ -19,14 +19,8 @@ namespace VPet.Plugin.LolisBuddy.Core
 
         private void updateData()
         {
-            if (name == "speech")
-            {
-                interval = LolisBuddy.setting.DelayTimer; chance = LolisBuddy.setting.ChanceTalk;
-            }
-            if (name == "AIspeech")
-            {
+
                 interval = LolisBuddy.AIsetting.DelayTimer; chance = LolisBuddy.AIsetting.ChanceTalk;
-            }
         }
 
         public string name { get; set; }
